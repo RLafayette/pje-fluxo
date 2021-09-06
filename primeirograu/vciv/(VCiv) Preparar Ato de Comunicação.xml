@@ -180,9 +180,6 @@
         <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?">
             <condition expression="#{true}"/>
         </transition>
-        <event type="task-start">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Deslocar secretaria unificada assinatura citação')}"/>
-        </event>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
