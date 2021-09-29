@@ -238,6 +238,7 @@ Aguardar Perícia / Laudo Técnico / Outros...]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_encerrar_prazo')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:encerrar_prazo')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_registrar_serasajud')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada')}"/>
         </event>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:aguardar_laudo_tecnico', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_aguardar_laudo_tecnico'))}"/>
