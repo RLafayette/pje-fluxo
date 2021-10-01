@@ -198,6 +198,12 @@ Aguardar Perícia / Laudo Técnico / Outros...]]></description>
         </transition>
         <transition to="(VCiv) Dar cumprimento a ato judicial de penhora online" name="20 - Dar cumprimento a ato judicial de penhora online"/>
         <transition to="(VCiv) Citar com um clique" name="21 - Citar com um clique"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+        </event>
         <event type="task-start">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_aguardar_laudo_tecnico')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_aguardar_audiencia')}"/>
