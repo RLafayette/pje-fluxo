@@ -654,6 +654,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         </transition>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada audiências realizadas com acordo">
@@ -676,6 +677,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         </transition>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada audiências realizadas sem laudo">
@@ -705,6 +707,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         </transition>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada audiências realizadas com laudo">
@@ -734,6 +737,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         </transition>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada audiências não realizadas">
@@ -756,6 +760,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         </transition>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada audiências realizadas com ausência parcial das partes">
@@ -778,6 +783,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         <transition to="Término" name="Cancelar e sair da tarefa"/>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada audiências realizadas com acordo parcial">
@@ -800,6 +806,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         <transition to="Término" name="Cancelar e sair da tarefa"/>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada pericia realizada">
@@ -822,6 +829,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         <transition to="Término" name="Cancelar e sair da tarefa"/>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Deslocar secretaria unificada pericia não realizada">
@@ -844,6 +852,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         <transition to="Término" name="Cancelar e sair da tarefa"/>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(123).comComplementoDeCodigo(7).doTipoLivre().preencherComTexto('juizo de origem').comComplementoDeCodigo(18).doTipoLivre().preencherComTexto('CEJUSC').lancarMovimento()}"/>
+            <action expression="#{entityManager.createNativeQuery('update tb_processo_instance set id_orgao_julgador_cargo = null, id_localizacao = null where id_processo = :idProcesso').setParameter('idProcesso', tramitacaoProcessualService.recuperaVariavel('processo')).executeUpdate()}"/>
         </event>
     </task-node>
     <process-state name="(CEJUSC) Controle de PERÍCIA do CEJUSC">
