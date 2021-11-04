@@ -2,9 +2,7 @@
 
 <process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(SG) Remessa para outra instância">
     <description><![CDATA[Código do fluxo: SG_REMINST
-
 Descrição: Controle de remessa de processo para instância superior e primeiro grau.
-
 Raia        Localização              Papel
 Secretaria  Secretaria Segundo Grau  Chefe de Secretaria
 Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>  
@@ -13,7 +11,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <assignment actor-id="#{actor.id}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
@@ -54,13 +52,11 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             </controller>
         </task>
         <description><![CDATA[*Variáveis*
-
 1. Variável: aviso1
    Label: Movimento de remessa foi lançado no processo. Aguarde-se o julgamento até que o processo seja devolvido pela instância superior correspondente. Após isso, registre a baixa e siga normalmente no fluxo.
    Escrita: Sim
    Obrig.: Não
    Tipo: Aviso
-
 2. Variável: movimentacaoLote
    Label: 
    Escrita: Sim
@@ -85,13 +81,11 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             </controller>
         </task>
         <description><![CDATA[*Variáveis*
-
 1. Variável: aviso1
    Label: Movimento de remessa foi lançado no processo. Aguarde-se o julgamento até que o processo seja devolvido pela instância superior correspondente. Após isso, registre a baixa e siga normalmente no fluxo.
    Escrita: Sim
    Obrig.: Não
    Tipo: Aviso
-
 2. Variável: movimentacaoLote
    Label: 
    Escrita: Sim
@@ -125,7 +119,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             </controller>
         </task>
         <description><![CDATA[*Variáveis*
-
 1. Variável: Intercomunicacao_retornoProcesso
    Label: 
    Escrita: Sim
@@ -135,6 +128,9 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             <condition expression="#{true}"/>
         </transition>
         <transition to="Término" name="Cancelar e sair da tarefa"/>
+        <transition to="(SG) Remessa para o primeiro grau concluída" name="Processo já remetido!">
+            <condition expression="#{ parametroUtil.getParametro('pje:tjrn:ProcessoJaRemetido').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).concat('_')) }"/>
+        </transition>
         <transition to="(SG) Remessa para o primeiro grau concluída" name="(SG) Remessa para o primeiro grau concluída">
             <condition expression="#{true}"/>
         </transition>
@@ -154,7 +150,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             </controller>
         </task>
         <description><![CDATA[*Variáveis*
-
 1. Variável: aviso1
    Label: Processo devolvido ao primeiro grau.
    Escrita: Sim
