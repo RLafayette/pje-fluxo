@@ -299,9 +299,6 @@
     <node name="Recuperar última intimação">
         <description><![CDATA[Produz as variáveis de fluxo 'tjrn:fluxo:vciv:cpre:houveManifestacao' e 'tjrn:fluxo:vciv:cpre:ultimaIntimacao'.]]></description>
         <transition to="Certifica sem validar?" name="Certifica sem validar?"/>
-        <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:expedientesProcesso')}"/>
-        </event>
         <event type="node-enter">
             <action expression="{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao', processoDocumentoManager.findById(entityManager.createNativeQuery(&quot;select tppe.id_processo_parte_expediente from tb_proc_parte_expediente tppe where id_processo_trf = :idProcesso and id_processo_expediente in (select distinct on (id_processo_trf) id_processo_expediente from tb_processo_expediente tpe where id_tipo_processo_documento = :idTipoDocumentoIntimacao and tpe.id_processo_trf = tppe.id_processo_trf order by id_processo_trf , id_processo_expediente desc)&quot;).setParameter('idProcesso',tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf()).setParameter('idTipoDocumentoIntimacao',parametroService.valueOf('idTipoDocumentoIntimacao')).getSingleResult()))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:vciv:cpre:houveManifestacao', processoDocumentoManager.recuperaDocumentosJuntados(tramitacaoProcessualService.recuperaProcesso(), tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao')!=null ? tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao').getProcessoExpediente().getProcessoDocumento().getDataJuntada() : dateUtil.getDataAtual()).size()&gt;0)}"/>
@@ -324,7 +321,7 @@
         <transition to="(VCiv) Processos com prazos decorridos certificados automaticamente" name="(VCiv) Processos com prazos decorridos certificados automaticamente"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:idMinuta')}"/>
-            <!--<action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao')}"/>-->
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:validarCertidaoDecursoPrazo')}"/>
         </event>
         <event type="node-enter">
