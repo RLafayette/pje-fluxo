@@ -74,7 +74,7 @@
         <description><![CDATA[*Variáveis de Tarefa*
 - Nome: aviso1
 - Tipo: Aviso
-- Label: Existe Manifestação para o Expediente. Com isso não foi gerado o certificado.
+- Label: Existe Manifestação para o Expediente. Com isso não foi gerado o certificado. 
 - Escrita: Sim]]></description>
         <transition to="Término" name="Finalizar e sair da Tarefa"/>
         <transition to="Nó de Desvio - Certidão Automática de Prazos Decorridos" name="Nó de Desvio - Certidão Automática de Prazos Decorridos">
