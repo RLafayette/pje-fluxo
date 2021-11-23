@@ -192,7 +192,7 @@
                 <variable name="MovimentarLote" mapped-name="movimentarLote:MovimentarLote" access="read,write"/>
             </controller>
         </task>
-        <transition to="Recuperar última intimação" name="Gerar automaticamente certidão de decurso de prazo"/>
+        <transition to="Disparar Fluxo Certificar decurso de prazo" name="Gerar automaticamente certidão de decurso de prazo"/>
         <transition to="(VCiv) Certidão automática de trânsito em julgado" name="Gerar automaticamente certidão de trânsito em julgado (cível)"/>
         <transition to="Término" name="Finalizar e sair da tarefa"/>
         <transition to="Nó de Desvio - (VCiv) Controle de prazos e retorno de expedientes" name="Nó de Desvio - (VCiv) Controle de prazos e retorno de expedientes">
@@ -291,46 +291,23 @@
         </event>
     </node>
     <node name="(VCiv) Preparar para certificar decurso de prazo">
-        <transition to="Recuperar última intimação" name="Recuperar última intimação"/>
+        <transition to="Disparar Fluxo Certificar decurso de prazo" name="Disparar Fluxo Certificar decurso de prazo"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:vciv:cpre:validarCertidaoDecursoPrazo', true)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo', true)}"/>
         </event>
     </node>
-    <node name="Recuperar última intimação">
-        <description><![CDATA[Produz as variáveis de fluxo 'tjrn:fluxo:vciv:cpre:houveManifestacao' e 'tjrn:fluxo:vciv:cpre:ultimaIntimacao'.]]></description>
-        <transition to="Certifica sem validar?" name="Certifica sem validar?"/>
-        <event type="node-enter">
-            <action expression="{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao', processoDocumentoManager.findById(entityManager.createNativeQuery(&quot;select tppe.id_processo_parte_expediente from tb_proc_parte_expediente tppe where id_processo_trf = :idProcesso and id_processo_expediente in (select distinct on (id_processo_trf) id_processo_expediente from tb_processo_expediente tpe where id_tipo_processo_documento = :idTipoDocumentoIntimacao and tpe.id_processo_trf = tppe.id_processo_trf order by id_processo_trf , id_processo_expediente desc)&quot;).setParameter('idProcesso',tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf()).setParameter('idTipoDocumentoIntimacao',parametroService.valueOf('idTipoDocumentoIntimacao')).getSingleResult()))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:vciv:cpre:houveManifestacao', processoDocumentoManager.recuperaDocumentosJuntados(tramitacaoProcessualService.recuperaProcesso(), tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao')!=null ? tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao').getProcessoExpediente().getProcessoDocumento().getDataJuntada() : dateUtil.getDataAtual()).size()&gt;0)}"/>
+     <node name="Disparar Fluxo Certificar decurso de prazo">
+        <transition to="Foi gerado o certificado automaticamente?" name="Foi gerado o certificado automaticamente?"/>
+         <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tpje:fluxo:nomePrefixoTipoFluxo','VCiv')}"/>
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'MINI_CERT_AUTO_PRAZ_DECO', processInstance.contextInstance.variables)}"/>
         </event>
     </node>
-    <decision expression="#{empty tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:validarCertidaoDecursoPrazo') ? 'Sim' : 'Não'}" name="Certifica sem validar?">
-        <transition to="(VCiv) Certidão automática de prazo decorrido" name="Sim"/>
-        <transition to="(VCiv) Houve alguma manifestação?" name="Não"/>
+    <!-- Fazer os testes se o documento foi gerado a partir do tipo de documento e tempo de gerado -->
+    <decision expression="#{processoJudicialService.recuperarUltimoMovimento(tramitacaoProcessualService.recuperaProcesso()).getProcessoDocumento().getTipoProcessoDocumento().getIdTipoProcessoDocumento() eq parametroService.valueOf('idTipoDocumentoCertidaoDecursoPrazo') and dateUtil.isDataIgual(dateUtil.getDataAtual(),processoJudicialService.recuperarUltimoMovimento(tramitacaoProcessualService.recuperaProcesso()).getDataAtualizacao()) ? 'Sim' : 'Não'}" name="Foi gerado o certificado automaticamente?">
+        <transition to="Término" name="Sim"/>
+        <transition to="(VCiv) Processos com prazos decorridos" name="Não"/>
     </decision>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao')==null || tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:vciv:cpre:houveManifestacao') ? 'Sim' : 'Não'}" name="(VCiv) Houve alguma manifestação?">
-        <description><![CDATA[Valida se houve uma intimação nos autos e nenhuma manifestação para encaminhar para certificar automaticamente o decurso de prazo.]]></description>
-        <transition to="(VCiv) Processos com prazos decorridos" name="Sim"/>
-        <transition to="(VCiv) Certidão automática de prazo decorrido" name="Não"/>
-        <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:houveManifestacao')}"/>
-        </event>
-    </decision>
-    <node name="(VCiv) Certidão automática de prazo decorrido">
-        <description><![CDATA[Junta certidão automática de ausência de manifestação das partes dentro do prazo.]]></description>
-        <transition to="(VCiv) Processos com prazos decorridos certificados automaticamente" name="(VCiv) Processos com prazos decorridos certificados automaticamente"/>
-        <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:idMinuta')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:ultimaIntimacao')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:validarCertidaoDecursoPrazo')}"/>
-        </event>
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:idMinuta', documentoJudicialService.gerarMinuta(tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf(), 0, taskInstance.id, parametroService.valueOf('idTipoDocumentoCertidaoDecursoPrazo'), parametroService.valueOf('idModeloCertidaoDecursoPrazo')))}"/>
-            <action expression="#{preencherMovimento.deCodigo(60).associarAoDocumentoDeId(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:idMinuta')).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(107).lancarMovimentoTemporariamente(processInstance)}"/>
-            <action expression="#{documentoJudicialService.juntarDocumento(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:idMinuta'), taskInstance.id,processInstance.id)}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:atoProferido', documentoJudicialService.getDocumento(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:idMinuta')).getIdProcessoDocumento())}"/>
-        </event>
-    </node>
     <task-node end-tasks="true" name="(VCiv) Processos com prazos decorridos">
         <task name="(VCiv) Processos com prazos decorridos" swimlane="Secretaria" priority="3">
             <controller>
@@ -345,24 +322,12 @@
     </task-node>
      <!--   -->
     <node name="Apagar variável de validação">
-        <transition to="Recuperar última intimação" name="Recuperar última intimação"/>
+        <transition to="Disparar Fluxo Certificar decurso de prazo" name="Disparar Fluxo Certificar decurso de prazo"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:vciv:cpre:validarCertidaoDecursoPrazo')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo')}"/>
         </event>
     </node>
     <!--   -->
-    <task-node end-tasks="true" name="(VCiv) Processos com prazos decorridos certificados automaticamente">
-        <task name="(VCiv) Processos com prazos decorridos certificados automaticamente" swimlane="Secretaria" priority="3">
-            <controller>
-                <variable name="Processo_Fluxo_visualizarDecisao" mapped-name="frame:Processo_Fluxo_visualizarDecisao" access="read,write"/>
-                <variable name="MovimentarLote" mapped-name="movimentarLote:MovimentarLote" access="read,write"/>
-            </controller>
-        </task>
-        <transition to="Término" name="Finalizar e sair da tarefa"/>
-        <transition to="Nó de Desvio - (VCiv) Controle de prazos e retorno de expedientes" name="Nó de Desvio - (VCiv) Controle de prazos e retorno de expedientes">
-            <condition expression="#{true}"/>
-        </transition>
-    </task-node>
     <task-node end-tasks="true" name="(VCiv) Processos com trânsito em julgado">
         <task name="(VCiv) Processos com trânsito em julgado" swimlane="Secretaria" priority="3">
             <controller>
@@ -421,7 +386,6 @@
         <transition to="(VCiv) Aguardando devolução de carta precatória ou rogatória" name="(VCiv) Aguardando devolução de carta precatória ou rogatória"/>
         <transition to="(VCiv) Aguardando carta precatória ou rogatória" name="(VCiv) Aguardando carta precatória ou rogatória"/>
         <transition to="(VCiv) Aguardar trânsito em julgado" name="(VCiv) Aguardar trânsito em julgado"/>
-        <transition to="(VCiv) Processos com prazos decorridos certificados automaticamente" name="(VCiv) Processos com prazos decorridos certificados automaticamente"/>
         <transition to="(VCiv) Processos com trânsito em julgado" name="(VCiv) Processos com trânsito em julgado"/>
         <transition to="(VCiv) Processos com prazos decorridos após sentença" name="(VCiv) Processos com prazos decorridos após sentença"/>
     </task-node>
