@@ -50,6 +50,8 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('mostrarBotaoGravarNoFluxo', false)}"/>
             <action expression="#{(processoHome.instance.idProcesso &gt; 0 and not empty revisarMinutaAction.processoDocumento.processoDocumentoBin.signatarios) ? lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{false}') : ''}"/>
             <action expression="#{(processoHome.instance.idProcesso &gt; 0 and not empty revisarMinutaAction.processoDocumento.processoDocumentoBin.signatarios) ? tramitacaoProcessualService.gravaVariavel('pje:atoProferido', tramitacaoProcessualService.recuperaVariavel('minutaEmElaboracao')) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:resultado:revisarMinutaAction')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:mensagem:revisarMinutaAction')}"/>
         </event>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds', '63,64')}"/>
@@ -60,7 +62,7 @@
         </event>
     </task-node>
     <task-node end-tasks="true" name="(RPP) Conclusos para decisão sobre reativação - ASSINAR">
-        <task name="(RPP) Conclusos para decisão sobre reativação - ASSINAR" swimlane="Magistrado" priority="3">
+        <task name="(RPP) Conclusos para decisão sobre reativação - ASSINAR" swimlane="Magistrado" priority="4">
             <controller>
                 <variable name="Processo_Fluxo_revisarMinuta" mapped-name="frame:Processo_Fluxo_revisarMinuta" access="read,write"/>
                 <variable name="assinarLote" mapped-name="assinarLote:assinarLote" access="read,write"/>
@@ -77,6 +79,10 @@
         <transition to="Nó de Desvio - (RPP) Fluxo de preparação de ato judicial de decisão sobre reativação" name="Nó de Desvio - (RPP) Fluxo de preparação de ato judicial de decisão sobre reativação">
             <condition expression="#{true}"/>
         </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:resultado:revisarMinutaAction')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:mensagem:revisarMinutaAction')}"/>
+        </event>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds', '63,64')}"/>
             <action expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{false}')}"/>
@@ -87,6 +93,11 @@
     <process-state name="(RPP) Subfluxo de autos recebidos do gabinete [decisão sobre reativação]">
         <sub-process name="(RPP) Fluxo de autos recebidos do gabinete [decisão sobre reativação]" binding="late"/>
         <transition to="(RPP) Apagar variáveis do fluxo" name="(RPP) Apagar variáveis do fluxo"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaAtoJudicial')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_revisarMinuta')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frame:Processo_Fluxo_revisarMinuta')}"/>
+        </event>
     </process-state>
     <node name="(RPP) Apagar variáveis do fluxo">
         <transition to="Término" name="Término"/>
