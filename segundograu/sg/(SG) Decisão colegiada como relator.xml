@@ -319,6 +319,7 @@ Magistrado  Assessoria Segundo Grau  Assessor
         <transition to="(SG) Retirado de pauta - ANALISAR" name="(SG) Retirado de pauta - ANALISAR"/>
         <event type="node-enter">
             <action expression="#{processoJudicialManager.aptidaoParaJulgamento(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf, false)}"/>
+            <action expression="#{tramitacaoProcessualService.fecharTarefa('(SG) Documentos não lidos - Memoriais - ANALISAR')}"/>
         </event>
     </node>
     <task-node end-tasks="true" name="(SG) Sessão de julgamento - AGUARDAR">
@@ -464,6 +465,9 @@ Magistrado  Assessoria Segundo Grau  Assessor
     <decision expression="#{not empty tramitacaoProcessualService.recuperaVariavel('pje:fluxo:colegiado:orgaoVencedor:id') and tramitacaoProcessualService.recuperaVariavel('pje:fluxo:colegiado:orgaoVencedor:id') == tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador ? '(SG) Acórdão [Inteiro Teor] - CONFERIR' : '(SG) Deslocar órgão ao relator pro acórdão'}" name="(SG) Gabinete do relator foi o vencedor?">
         <transition to="(SG) Deslocar órgão ao relator pro acórdão" name="(SG) Deslocar órgão ao relator pro acórdão"/>
         <transition to="(SG) Acórdão [Inteiro Teor] - CONFERIR" name="(SG) Acórdão [Inteiro Teor] - CONFERIR"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.fecharTarefa('(SG) Documentos não lidos - Memoriais - ANALISAR')}"/>
+        </event>
     </decision>
     <task-node end-tasks="true" name="(SG) Acórdão [Inteiro Teor] - CONFERIR">
         <task name="(SG) Acórdão [Inteiro Teor] - CONFERIR" swimlane="Redação judiciária" priority="3">
@@ -706,6 +710,12 @@ Magistrado  Assessoria Segundo Grau  Assessor
     <process-state name="(SG) Enviar autos à secretaria">
         <sub-process name="(SG) Preparar ato de comunicação do acórdão" binding="late"/>
         <transition to="(SG) Apagar variáveis do fluxo" name="(SG) Apagar variáveis do fluxo"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+        </event>
     </process-state>
     <node name="(SG) Registrar aptidão para inclusão em mesa">
         <transition to="(SG) Sessão de julgamento - AGUARDAR" name="(SG) Sessão de julgamento - AGUARDAR"/>
