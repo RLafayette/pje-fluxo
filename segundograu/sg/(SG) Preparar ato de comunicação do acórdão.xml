@@ -17,15 +17,16 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
-        <task name="Tarefa inicial" swimlane="Secretaria"/>
+        <task name="Tarefa inicial" swimlane="Secretaria" priority="3"/>
         <transition to="(SG) Acórdão assinado - CUMPRIR" name="(SG) Acórdão assinado - CUMPRIR"/>
     </start-state>  
     <!-- NODES -->
     <task-node end-tasks="true" name="(SG) Acórdão assinado - CUMPRIR">
-        <task name="(SG) Acórdão assinado - CUMPRIR" swimlane="Secretaria">
+        <task name="(SG) Acórdão assinado - CUMPRIR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="aviso2" mapped-name="textAlert:aviso2" access="read,write"/>
+                <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
             </controller>
         </task>
         <description><![CDATA[*Variáveis*
@@ -38,18 +39,27 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
 2. aviso2
    Label: - Caso precise cumprir outras determinações, encaminhe o processo para "Secretaria - ANALISAR" para ter acesso às demais opções.
    Escrita: Sim
-   Obrig.: Não]]></description>
+   Obrig.: Não
+ 
+3. Variável: movimentacaoLote
+   Label: movimentarLote:movimentacaoLote
+   Escrita: Sim
+   Obrig.: Não
+   Tipo: Habilitar Movimentação em lote]]></description>
         <transition to="(SG) Intimação do acórdão - EXPEDIR" name="Intimar do acórdão"/>
         <transition to="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão" name="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão">
             <condition expression="#{true}"/>
         </transition>
         <transition to="Término" name="Encaminhar para &quot;Secretaria - ANALISAR&quot;"/>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('movimentarLote:movimentacaoLote')}"/>
+        </event>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(SG) Intimação do acórdão - EXPEDIR">
-        <task name="(SG) Intimação do acórdão - EXPEDIR" swimlane="Secretaria">
+        <task name="(SG) Intimação do acórdão - EXPEDIR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
@@ -96,7 +106,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(SG) Secretário(a) [INTIMAÇÃO DO ACÓRDÃO] - ASSINAR">
-        <task name="(SG) Secretário(a) [INTIMAÇÃO DO ACÓRDÃO] - ASSINAR" swimlane="Secretaria">
+        <task name="(SG) Secretário(a) [INTIMAÇÃO DO ACÓRDÃO] - ASSINAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
@@ -163,7 +173,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         </event>
     </node>
     <task-node end-tasks="true" name="(SG) Intimação do acórdão via correios - IMPRIMIR">
-        <task name="(SG) Intimação do acórdão via correios - IMPRIMIR" swimlane="Secretaria">
+        <task name="(SG) Intimação do acórdão via correios - IMPRIMIR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Processo_Fluxo_expedientes_correios" mapped-name="frame:Processo_Fluxo_expedientes_correios" access="read,write"/>
             </controller>
@@ -274,7 +284,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
     </node>
     <end-state name="Término"/>
     <task-node end-tasks="true" name="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão">
-        <task name="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão" swimlane="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão"/>
+        <task name="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão" swimlane="Nó de Desvio - (SG) Preparar ato de comunicação do acórdão" priority="3"/>
         <transition to="Término" name="Término"/>
         <transition to="(SG) Intimação do acórdão - EXPEDIR" name="(SG) Intimação do acórdão - EXPEDIR"/>
         <transition to="(SG) Intimação do acórdão via correios - IMPRIMIR" name="(SG) Intimação do acórdão via correios - IMPRIMIR"/>
