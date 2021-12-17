@@ -40,6 +40,8 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:miniPac:DocJaExiste')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:transicao:lancamentoMovimentoObrigatorio')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('minutaEmElaboracao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:resultado:revisarMinutaAction')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:mensagem:revisarMinutaAction')}"/>
         </event>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('minutaEmElaboracao', tramitacaoProcessualService.recuperaVariavelTarefa('textEditCombo:minutaEmElaboracao'))}"/>
@@ -67,13 +69,11 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp')))}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp')))}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp')))}"/>
-        </event>
-        <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos', 'Cancelar elaboração do documento')}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(RPP) Elaborar documento - ASSINAR">
-        <task name="(RPP) Elaborar documento - ASSINAR" swimlane="Secretaria" priority="3">
+        <task name="(RPP) Elaborar documento - ASSINAR" swimlane="Secretaria" priority="4">
             <controller>
                 <variable name="Processo_Fluxo_revisarMinuta" mapped-name="frame:Processo_Fluxo_revisarMinuta" access="read,write"/>
                 <variable name="AssinaturaEmLote" mapped-name="assinarLote:AssinaturaEmLote" access="read,write"/>
@@ -87,6 +87,10 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(RPP) Elaborar documento - EXPEDIR" name="Retornar para minuta"/>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:resultado:revisarMinutaAction')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:tarefa:validacao:componente:mensagem:revisarMinutaAction')}"/>
+        </event>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('prepararAto:meiosComunicacoes','E,C,M')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTemp', org.jboss.seam.bpm.taskInstance.getId())}"/>
@@ -174,6 +178,8 @@
             <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('frameDefaultLeavingTransition')}"/>
             <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:miniPac:DocJaExiste')}"/>
             <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:transicao:lancamentoMovimentoObrigatorio')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frame:Processo_Fluxo_revisarMinuta')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_revisarMinuta')}"/>
         </event>
     </node>
     <end-state name="Término"/>
