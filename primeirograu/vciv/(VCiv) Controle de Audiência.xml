@@ -118,6 +118,9 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Apagar minuta em elaboração" name="Cancelar e sair da tarefa"/>
+        <transition to="(VCiv) Preencheu dados da audiência - magistrado ?" name="Assinar ata de audiência pelo magistrado">
+            <condition expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada') != null}"/>
+        </transition>
         <event type="task-start">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos','Cancelar e sair da tarefa')}"/>
             <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,164')}"/>
@@ -172,7 +175,9 @@
         <transition to="Nó de Desvio - (VCiv) Controle de Audiência" name="Nó de Desvio - (VCiv) Controle de Audiência">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(VCiv) Minutar ata de audiência" name="(VCiv) Minutar ata de audiência"/>
+        <transition to="(VCiv) Minutar ata de audiência" name="(VCiv) Minutar ata de audiência">
+            <condition expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada') != null}"/>
+        </transition>
         <transition to="(VCiv) Selecionar opção de intimação" name="(VCiv) Selecionar opção de intimação">
             <condition expression="#{true}"/>
         </transition>
