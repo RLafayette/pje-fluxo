@@ -1,88 +1,88 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="CertidÃ£o AutomÃ¡tica de Prazos Decorridos">
-    <description><![CDATA[CÃ³digo: MINI_CERT_AUTO_PRAZ_DECO
-        Nome: CertidÃ£o AutomÃ¡tica de Prazos Decorridos
-        DescriÃ§Ã£o: Mini Fluxo para certidÃ£o automÃ¡tica de prazos decorridos.
+<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="Certidão Automática de Prazos Decorridos">
+    <description><![CDATA[Código: MINI_CERT_AUTO_PRAZ_DECO
+        Nome: Certidão Automática de Prazos Decorridos
+        Descrição: Mini Fluxo para certidão automática de prazos decorridos.
 
         ----------------------------------------------------------
-        VariÃ¡veis a serem configuradas na tabela de parÃ¢metros:
+        Variáveis a serem configuradas na tabela de parâmetros:
 
-        - idTipoDocumentoIntimacao - id do tipo de documento 'intimaÃ§Ã£o'
-        - idTipoDocumentoCertidaoDecursoPrazo - id do tipo de documento 'certidÃ£o de decurso de prazo'
-        - idModeloCertidaoDecursoPrazo - o id do modelo de documento para 'certidÃ£o automÃ¡tica de decurso de prazo'
+        - idTipoDocumentoIntimacao - id do tipo de documento 'intimação'
+        - idTipoDocumentoCertidaoDecursoPrazo - id do tipo de documento 'certidão de decurso de prazo'
+        - idModeloCertidaoDecursoPrazo - o id do modelo de documento para 'certidão automática de decurso de prazo'
 
 
         ----------------------------------------------------------
         Regra negocial
-        - O sistema deve juntar uma certidÃ£o automÃ¡tica de prazo decorrido se houver uma intimaÃ§Ã£o nos autos (juntada de expediente do tipo intimaÃ§Ã£o) e, desde a juntada da intimaÃ§Ã£o, nenhum documento foi juntado aos autos.
-        - Em qualquer outro cenÃ¡rio o sistema se comporta como jÃ¡ ocorre hoje (deixa o processo na tarefa 'processos com prazo decorrido'), para o servidor da Vara fazer a anÃ¡lise.
+        - O sistema deve juntar uma certidão automática de prazo decorrido se houver uma intimação nos autos (juntada de expediente do tipo intimação) e, desde a juntada da intimação, nenhum documento foi juntado aos autos.
+        - Em qualquer outro cenário o sistema se comporta como já ocorre hoje (deixa o processo na tarefa 'processos com prazo decorrido'), para o servidor da Vara fazer a análise.
 
         ----------------------------------------------------------
-        IntervenÃ§Ãµes:
-        - Associar o papel SISTEMA ao tipo de documento "CertidÃ£o de decurso de prazo", com exigibilidade Suficiente
-        - Criar um modelo de certidÃ£o automÃ¡tica de decurso de prazo (id 72124)
-        - Criar parÃ¢metro do tipo de documento (&#145;idTipoDocumentoCertidaoDecursoPrazo&#146;)
-        - Criar parÃ¢metro do modelo de documento (&#145;idModeloCertidaoDecursoPrazo&#146;)
-        - Criar parÃ¢metro do tipo de documento de intimaÃ§Ã£o (&#145;idTipoDocumentoIntimacao&#146;)
-        - Modificar o fluxo para certificar de forma automÃ¡tica o decurso
+        Intervenções:
+        - Associar o papel SISTEMA ao tipo de documento "Certidão de decurso de prazo", com exigibilidade Suficiente
+        - Criar um modelo de certidão automática de decurso de prazo (id 72124)
+        - Criar parâmetro do tipo de documento (&#145;idTipoDocumentoCertidaoDecursoPrazo&#146;)
+        - Criar parâmetro do modelo de documento (&#145;idModeloCertidaoDecursoPrazo&#146;)
+        - Criar parâmetro do tipo de documento de intimação (&#145;idTipoDocumentoIntimacao&#146;)
+        - Modificar o fluxo para certificar de forma automática o decurso
 
         ----------------------------------------------------------
-        Como chamar o fluxo, variÃ¡veis que devem(podem) ser definidas ao iniciar o fluxo:
-        - pje:fluxo:nomePrefixoTipoFluxo (opcional): deve definir o tipo de fluxo que serÃ¡ exibido nos nÃ³s de tarefa do Fluxo. Exemplo: EF, ou VCiv, ou CEJUSC
-        - tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo (opcional): se contiver valor serÃ¡ validado se o processo houve manifestaÃ§Ã£o ou nÃ£o]]></description>  
+        Como chamar o fluxo, variáveis que devem(podem) ser definidas ao iniciar o fluxo:
+        - pje:fluxo:nomePrefixoTipoFluxo (opcional): deve definir o tipo de fluxo que será exibido nos nós de tarefa do Fluxo. Exemplo: EF, ou VCiv, ou CEJUSC
+        - tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo (opcional): se contiver valor será validado se o processo houve manifestação ou não]]></description>  
     <!-- SWIMLANES -->
-    <swimlane name="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos">
+    <swimlane name="Nó de Desvio - Certidão Automática de Prazos Decorridos">
         <assignment actor-id="#{actor.id}"/>
     </swimlane>
     <swimlane name="Secretaria">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
     </swimlane>  
     <!-- START-STATE -->
-    <start-state name="InÃ­cio">
+    <start-state name="Início">
         <task name="Tarefa inicial" priority="3"/>
-        <transition to="Recuperar Ãºltima intimaÃ§Ã£o" name="Recuperar Ãºltima intimaÃ§Ã£o"/>
+        <transition to="Recuperar última intimação" name="Recuperar última intimação"/>
     </start-state>  
     <!-- NODES -->
-    <node name="Recuperar Ãºltima intimaÃ§Ã£o">
-        <description><![CDATA[Produz as variÃ¡veis de fluxo 'tjrn:fluxo:mini:capd:houveManifestacao' e 'tjrn:fluxo:mini:capd:ultimaIntimacao'.]]></description>
+    <node name="Recuperar última intimação">
+        <description><![CDATA[Produz as variáveis de fluxo 'tjrn:fluxo:mini:capd:houveManifestacao' e 'tjrn:fluxo:mini:capd:ultimaIntimacao'.]]></description>
         <transition to="Certifica sem validar?" name="Certifica sem validar?"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao', entityManager.createNativeQuery(&quot;select cast(tppe.id_processo_parte_expediente as integer) from tb_proc_parte_expediente tppe where id_processo_trf = :idProcesso and id_processo_expediente in (select distinct on (id_processo_trf) id_processo_expediente from tb_processo_expediente tpe where cast(id_tipo_processo_documento as varchar) = :idTipoDocumentoIntimacao and tpe.id_processo_trf = tppe.id_processo_trf order by id_processo_trf , id_processo_expediente desc) limit 1 &quot;).setParameter('idProcesso',tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf()).setParameter('idTipoDocumentoIntimacao',parametroService.valueOf('idTipoDocumentoIntimacao')).getSingleResult())}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:capd:houveManifestacao', processoDocumentoManager.recuperaDocumentosJuntados(tramitacaoProcessualService.recuperaProcesso(), tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao')!= null ? processoParteExpedienteManager.findById(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao')).getProcessoExpediente().getProcessoDocumento().getDataJuntada() : dateUtil.getDataAtual()).size() &gt; 1)}"/>
         </event>
     </node>
-    <decision expression="#{empty tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo') ? 'Sim' : 'NÃ£o'}" name="Certifica sem validar?">
-        <description><![CDATA[Valida se deve validar ou nÃ£o a certidÃ£o de decurso de prazo]]></description>
-        <transition to="Houve alguma manifestaÃ§Ã£o?" name="NÃ£o"/>
-        <transition to="CertidÃ£o automÃ¡tica de prazo decorrido" name="Sim"/>
+    <decision expression="#{empty tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo') ? 'Sim' : 'Não'}" name="Certifica sem validar?">
+        <description><![CDATA[Valida se deve validar ou não a certidão de decurso de prazo]]></description>
+        <transition to="Houve alguma manifestação?" name="Não"/>
+        <transition to="Certidão automática de prazo decorrido" name="Sim"/>
     </decision>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao')==null || tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:houveManifestacao') ? 'Sim' : 'NÃ£o'}" name="Houve alguma manifestaÃ§Ã£o?">
-        <description><![CDATA[Verifica se se a ultima intimaÃ§Ã£o Ã© o ultimo documento ou se houve alguma outra manifestaÃ§Ã£o.]]></description>
-        <transition to="CertidÃ£o automÃ¡tica de prazo decorrido" name="NÃ£o"/>
-        <transition to="(SG) CertidÃ£o de decurso de prazo nÃ£o gerada" name="Sim"/>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao')==null || tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:capd:houveManifestacao') ? 'Sim' : 'Não'}" name="Houve alguma manifestação?">
+        <description><![CDATA[Verifica se se a ultima intimação é o ultimo documento ou se houve alguma outra manifestação.]]></description>
+        <transition to="Certidão automática de prazo decorrido" name="Não"/>
+        <transition to="(SG) Certidão de decurso de prazo não gerada" name="Sim"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:houveManifestacao')}"/>
         </event>
     </decision>
-    <task-node end-tasks="true" name="(SG) CertidÃ£o de decurso de prazo nÃ£o gerada">
-        <task name="(SG) CertidÃ£o de decurso de prazo nÃ£o gerada" swimlane="Secretaria" priority="3">
+    <task-node end-tasks="true" name="(SG) Certidão de decurso de prazo não gerada">
+        <task name="(SG) Certidão de decurso de prazo não gerada" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
             </controller>
         </task>
-        <description><![CDATA[*VariÃ¡veis de Tarefa*
+        <description><![CDATA[*Variáveis de Tarefa*
 - Nome: aviso1
 - Tipo: Aviso
-- Label: Existe ManifestaÃ§Ã£o para o Expediente. Com isso nÃ£o foi gerado o certificado. 
+- Label: Existe Manifestação para o Expediente. Com isso não foi gerado o certificado. 
 - Escrita: Sim
-- ObrigatÃ³rio: NÃ£o]]></description>
-        <transition to="TÃ©rmino" name="Finalizar e sair da Tarefa"/>
-        <transition to="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos" name="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos">
+- Obrigatório: Não]]></description>
+        <transition to="Término" name="Finalizar e sair da Tarefa"/>
+        <transition to="Nó de Desvio - Certidão Automática de Prazos Decorridos" name="Nó de Desvio - Certidão Automática de Prazos Decorridos">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="Apagar variÃ¡vel de validaÃ§Ã£o" name="ForÃ§ar gerar CertidÃ£o de Decurso de Prazo"/>
+        <transition to="Apagar variável de validação" name="Forçar gerar Certidão de Decurso de Prazo"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
         </event>
@@ -90,14 +90,14 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
         </event>
     </task-node>
-    <node name="Apagar variÃ¡vel de validaÃ§Ã£o">
-        <transition to="Recuperar Ãºltima intimaÃ§Ã£o" name="Recuperar Ãºltima intimaÃ§Ã£o"/>
+    <node name="Apagar variável de validação">
+        <transition to="Recuperar última intimação" name="Recuperar última intimação"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:validarCertidaoDecursoPrazo')}"/>
         </event>
     </node>
-    <node name="CertidÃ£o automÃ¡tica de prazo decorrido">
-        <description><![CDATA[Junta certidÃ£o automÃ¡tica de ausÃªncia de manifestaÃ§Ã£o das partes dentro do prazo.]]></description>
+    <node name="Certidão automática de prazo decorrido">
+        <description><![CDATA[Junta certidão automática de ausência de manifestação das partes dentro do prazo.]]></description>
         <transition to="(SG) Processos com prazos decorridos certificados automaticamente" name="(SG) Processos com prazos decorridos certificados automaticamente"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:idMinuta')}"/>
@@ -117,19 +117,19 @@
                 <variable name="MovimentarLote" mapped-name="movimentarLote:MovimentarLote" access="read,write"/>
             </controller>
         </task>
-        <description><![CDATA[Visualizar a certidÃ£o de decurso de prazo gerada automaticamente]]></description>
-        <transition to="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos" name="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos">
+        <description><![CDATA[Visualizar a certidão de decurso de prazo gerada automaticamente]]></description>
+        <transition to="Nó de Desvio - Certidão Automática de Prazos Decorridos" name="Nó de Desvio - Certidão Automática de Prazos Decorridos">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="TÃ©rmino" name="Finalizar e sair da tarefa"/>
+        <transition to="Término" name="Finalizar e sair da tarefa"/>
     </task-node>
-    <task-node end-tasks="true" name="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos">
-        <task name="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos" swimlane="NÃ³ de Desvio - CertidÃ£o AutomÃ¡tica de Prazos Decorridos" priority="3"/>
-        <transition to="TÃ©rmino" name="TÃ©rmino"/>
+    <task-node end-tasks="true" name="Nó de Desvio - Certidão Automática de Prazos Decorridos">
+        <task name="Nó de Desvio - Certidão Automática de Prazos Decorridos" swimlane="Nó de Desvio - Certidão Automática de Prazos Decorridos" priority="3"/>
+        <transition to="Término" name="Término"/>
         <transition to="(SG) Processos com prazos decorridos certificados automaticamente" name="(SG) Processos com prazos decorridos certificados automaticamente"/>
-        <transition to="(SG) CertidÃ£o de decurso de prazo nÃ£o gerada" name="(SG) CertidÃ£o de decurso de prazo nÃ£o gerada"/>
+        <transition to="(SG) Certidão de decurso de prazo não gerada" name="(SG) Certidão de decurso de prazo não gerada"/>
     </task-node>
-    <end-state name="TÃ©rmino"/>  
+    <end-state name="Término"/>  
     <!-- PROCESS-EVENTS -->
     <event type="superstate-enter">
         <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
