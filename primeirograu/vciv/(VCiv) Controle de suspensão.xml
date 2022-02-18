@@ -185,7 +185,7 @@ aviso_susp_sem_mov: A suspensão/sobrestamento do processo não poderá ser efetiva
     <node name="(VCiv) Lançar movimento de encerramento da suspensão">
         <transition to="Término" name="Término"/>
         <event type="node-enter">
-            <action expression="#{preencherMovimento.deCodigo(90001).lancarMovimento()}"/>
+            <action expression="#{preencherMovimento.deCodigo(12066).lancarMovimento()}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('date:VCiv_cs_data_limite_suspensao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('dls')}"/>
             <action expression="#{lancadorMovimentosService.apagarMovimentosTemporarios()}"/>
