@@ -37,7 +37,7 @@
         <transition to="(VCiv) Aguardando manifestação do Ministério Público" name="(VCiv) Aguardando manifestação do Ministério Público"/>
         <transition to="(VCiv) Encaminhar Carta Rogatória" name="(VCiv) Encaminhar Carta Rogatória"/>
         <transition to="(VCiv) Expedir Carta Rogatória" name="(VCiv) Expedir Carta Rogatória"/>
-        <transition to="(VCiv) Informar conteúdo DJe" name="(VCiv) Informar conteúdo DJe"/>
+        <transition to="(VCiv) Publicar intimação no DJEN" name="(VCiv) Publicar intimação no DJEN"/>
         <transition to="(VCiv) Confirmar conteúdo DJe" name="(VCiv) Confirmar conteúdo DJe"/>
         <transition to="(VCiv) Ignorar conteúdo DJe" name="(VCiv) Ignorar conteúdo DJe"/>
         <transition to="(VCiv) Preparar intimação de reativação" name="(VCiv) Preparar intimação de reativação"/>
@@ -47,10 +47,10 @@
         <transition to="(VCiv) Assinar Carta Rogatória" name="(VCiv) Assinar Carta Rogatória"/>
         <transition to="(VCiv) Assinar Citação e(ou) intimação pelo chefe de secretaria" name="(VCiv) Assinar Citação e(ou) intimação pelo chefe de secretaria"/>
         <transition to="(VCiv) Assinar Citação e(ou) intimação pelo magistrado" name="(VCiv) Assinar Citação e(ou) intimação pelo magistrado"/>
+        <transition to="(VCiv) Informar conteúdo DJe" name="(VCiv) Informar conteúdo DJe"/>
     </task-node>
     <fork name="(VCiv) Separação em Preparar Ato de Comunicação">
         <transition to="(VCiv) É citação e(ou) intimação?" name="(VCiv) É citação e(ou) intimação?"/>
-        <transition to="(VCiv) É DJE?" name="(VCiv) É DJE?"/>
         <transition to="(VCiv) É Mandado?" name="(VCiv) É Mandado?"/>
         <transition to="(VCiv) É carta precatória?" name="(VCiv) É carta precatória?"/>
         <transition to="(VCiv) É intimação ao Ministério Público?" name="(VCiv) É intimação ao Ministério Público?"/>
@@ -60,10 +60,6 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:pac:intimar_mp', 'false')}"/>
         </event>
     </fork>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:cumpridec:publicar_dje') ? '(VCiv) Informar conteúdo DJe' : '(VCiv) Junção em Preparar Ato de Comunicação'}" name="(VCiv) É DJE?">
-        <transition to="(VCiv) Junção em Preparar Ato de Comunicação" name="(VCiv) Junção em Preparar Ato de Comunicação"/>
-        <transition to="(VCiv) Informar conteúdo DJe" name="(VCiv) Informar conteúdo DJe"/>
-    </decision>
     <join name="(VCiv) Junção em Preparar Ato de Comunicação">
         <transition to="(VCiv) Apagar variáveis do fluxo" name="Término"/>
     </join>
@@ -82,7 +78,7 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Junção em Preparar Ato de Comunicação" name="Ignorar citação e(ou) intimação"/>
-        <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?">
+        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Encaminhar para assinatura de citação e(ou) intimação?" name="Encaminhar para assinatura do chefe de secretaria">
@@ -100,9 +96,9 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) É competência de Fazenda?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em citação e(ou) intimação')}"/>
             <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
-            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S,D')}"/>
+            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
@@ -129,7 +125,7 @@
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
         </task>
-        <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?">
+        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Preparar citação e(ou) intimação" name="Retornar para expedição de citação e(ou) intimação"/>
@@ -147,8 +143,8 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) É competência de Fazenda?')}"/>
-            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S,D')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em citação e(ou) intimação')}"/>
+            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
@@ -177,7 +173,7 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Preparar citação e(ou) intimação" name="Retornar para expedição de citação e (ou) intimação"/>
-        <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?">
+        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação">
             <condition expression="#{true}"/>
         </transition>
         <event type="task-end">
@@ -186,8 +182,8 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempCitInt', org.jboss.seam.bpm.taskInstance.getId())}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) É competência de Fazenda?')}"/>
-            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S,D')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em citação e(ou) intimação')}"/>
+            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempCitInt')))) : ''}"/>
@@ -216,10 +212,14 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:ProxCitInt')}"/>
         </event>
     </decision>
-    <decision expression="#{processoTrfHome.possuiCompetencia(43) || processoTrfHome.possuiCompetencia(10) ? '(VCiv) Separação em citação e(ou) intimação' : '(VCiv) Informar conteúdo DJe'}" name="(VCiv) É competência de Fazenda?">
-        <transition to="(VCiv) Informar conteúdo DJe" name="(VCiv) Informar conteúdo DJe"/>
-        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação"/>
+    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:vciv:DefinicaoPublicaDJEN')) ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Publicar intimação no DJEN'}" name="(VCiv) É competência dos Juizados?">
+        <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
+        <transition to="(VCiv) Publicar intimação no DJEN" name="(VCiv) Publicar intimação no DJEN"/>
     </decision>
+    <process-state name="(VCiv) Publicar intimação no DJEN">
+        <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
+        <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
+    </process-state>
     <task-node end-tasks="true" name="(VCiv) Informar conteúdo DJe">
         <task name="(VCiv) Informar conteúdo DJe" swimlane="Secretaria" priority="3">
             <controller>
@@ -776,7 +776,7 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Junção em Preparar Ato de Comunicação" name="Ignorar citação e(ou) intimação"/>
-        <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?">
+        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação">
             <condition expression="#{true}"/>
         </transition>
         <event type="task-start">
@@ -784,7 +784,7 @@
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65')}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) É competência de Fazenda?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em citação e(ou) intimação')}"/>
         </event>
     </task-node>
     <process-state name="(VCiv) Controlar prazos">
@@ -959,7 +959,7 @@
         </event>
     </process-state>
     <node name="(VCiv) Lançar movimento de Expedição Outros documentos">
-        <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
+        <transition to="(VCiv) É competência dos Juizados?" name="(VCiv) É competência dos Juizados?"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('E', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
@@ -1096,7 +1096,7 @@
     </process-state>
     <process-state name="(VCiv) Deslocar secretaria unificada assinatura citação">
         <sub-process name="(SEC) Deslocamento para secretaria unificada" binding="late"/>
-        <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?"/>
+        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.deslocarFluxoParaOrgaoDiverso(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf, tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:orgaoDestino'), tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:orgaoCargoDestino'), tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:colegiadoDestino'))}"/>
             <action expression="#{entityManager.createNativeQuery('delete from jbpm_variableinstance where id_ in( select vi.id_ from jbpm_variableinstance vi join jbpm_processinstance pi on (pi.id_= vi.processinstance_) join tb_processo_instance tpi on (tpi.id_proc_inst = pi.id_) join tb_processo tp on (tpi.id_processo = tp.id_processo) where tp.nr_processo = :numeroProcesso and name_ in ('pje:fluxo:deslocamento:orgaoCargoDestino','pje:fluxo:deslocamento:orgaoDestino') order by id_ desc)').setParameter('numeroProcesso', tramitacaoProcessualService.recuperaProcesso().getProcesso().getNumeroProcesso()).executeUpdate()}"/>
