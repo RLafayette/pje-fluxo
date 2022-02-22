@@ -272,7 +272,7 @@ Descrição: Fluxo de controle de suspensão de processos.]]></description>
     <node name="(EF) Lançar movimento de encerramento da suspensão">
         <transition to="Término" name="Término"/>
         <event type="node-enter">
-            <action expression="#{preencherMovimento.deCodigo(90001).lancarMovimento()}"/>
+            <action expression="#{preencherMovimento.deCodigo(12066).lancarMovimento()}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('date:ef_cs_data_limite_suspensao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('dls')}"/>
             <action expression="#{lancadorMovimentosService.apagarMovimentosTemporarios()}"/>
