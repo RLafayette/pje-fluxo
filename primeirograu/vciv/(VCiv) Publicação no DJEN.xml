@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(VCiv) Publicação no DJEN">
+    <description><![CDATA[Teste!.]]></description>  
+    <!-- SWIMLANES -->
+    <swimlane name="Magistrado">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853,6:5901')}" actor-id="#{actor.id}"/>
+    </swimlane>
+    <swimlane name="Nó de Desvio - (VCiv) Publicação no DJEN">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:1469')}"/>
+    </swimlane>
+    <swimlane name="Secretaria">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853')}" actor-id="#{actor.id}"/>
+    </swimlane>  
+    <!-- START-STATE -->
+    <start-state name="Início">
+        <task name="Tarefa inicial" priority="3"/>
+        <transition to="(VCiv) Preparar expedientes para o DJEN" name="(VCiv) Preparar expedientes para o DJEN"/>
+    </start-state>  
+    <!-- NODES -->
+    <task-node end-tasks="true" name="(VCiv) Preparar expedientes para o DJEN">
+        <task name="(VCiv) Preparar expedientes para o DJEN" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="Término" name="Ignorar preparação de expedientes para o DJEN"/>
+        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(VCiv) Separação em Edital ou Diário" name="(VCiv) Separação em Edital ou Diário">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-start">
+            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
+            <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65')}"/>
+        </event>
+        <event type="task-create">
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
+        </event>
+    </task-node>
+    <fork name="(VCiv) Separação em Edital ou Diário">
+        <transition to="(VCiv) Possui meio Diário?" name="(VCiv) Possui meio Diário?"/>
+        <transition to="(VCiv) Possui meio Edital?" name="(VCiv) Possui meio Edital?"/>
+    </fork>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesDiario().size() &gt; 0 ? '(VCiv) Publicar diário no DJEN' : '(VCiv) Junção em Edital ou Diário'}" name="(VCiv) Possui meio Diário?">
+        <transition to="(VCiv) Publicar diário no DJEN" name="(VCiv) Publicar diário no DJEN"/>
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
+    </decision>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(VCiv) Publicar edital no DJEN' : '(VCiv) Junção em Edital ou Diário'}" name="(VCiv) Possui meio Edital?">
+        <transition to="(VCiv) Publicar edital no DJEN" name="(VCiv) Publicar edital no DJEN"/>
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
+    </decision>
+    <node name="(VCiv) Publicar diário no DJEN">
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
+        <event type="node-enter">
+            <action expression="#{publicadorPCP.publicar(comunicacaoProcessualAction.getExpedientesDiario())}"/>
+            <action expression="#{entityManager.createQuery(&quot;update ProcessoParteExpediente ppe set ppe.fechado = false, ppe.cienciaSistema = true, ppe.dtCienciaParte = current_timestamp() where ppe in (select ppe from ProcessoExpediente pe JOIN pe.processoParteExpedienteList ppe WHERE pe in :diarios)&quot;).setParameter(&quot;diarios&quot;, comunicacaoProcessualAction.getExpedientesDiario()).executeUpdate()}"/>
+            <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}"/>
+        </event>
+    </node>
+    <node name="(VCiv) Publicar edital no DJEN">
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
+        <event type="node-enter">
+            <action expression="#{publicadorPCP.publicar(comunicacaoProcessualAction.getExpedientesEdital())}"/>
+            <action expression="#{entityManager.createQuery(&quot;update ProcessoParteExpediente ppe set ppe.fechado = false, ppe.cienciaSistema = true, ppe.dtCienciaParte = current_timestamp() where ppe in (select ppe from ProcessoExpediente pe JOIN pe.processoParteExpedienteList ppe WHERE pe in :editais)&quot;).setParameter(&quot;editais&quot;, comunicacaoProcessualAction.getExpedientesEdital()).executeUpdate()}"/>
+            <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}"/>
+        </event>
+    </node>
+    <join name="(VCiv) Junção em Edital ou Diário">
+        <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
+    </join>
+    <task-node end-tasks="true" name="(VCiv) Processos com prazo em curso - DJEN">
+        <task name="(VCiv) Processos com prazo em curso - DJEN" swimlane="Secretaria" priority="3"/>
+        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="Término" name="Prosseguir"/>
+    </task-node>
+    <end-state name="Término"/>
+    <task-node end-tasks="true" name="Nó de Desvio - (VCiv) Publicação no DJEN">
+        <task name="Nó de Desvio - (VCiv) Publicação no DJEN" swimlane="Nó de Desvio - (VCiv) Publicação no DJEN" priority="3"/>
+        <transition to="Término" name="Término"/>
+        <transition to="(VCiv) Preparar expedientes para o DJEN" name="(VCiv) Preparar expedientes para o DJEN"/>
+        <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
+    </task-node>  
+    <!-- PROCESS-EVENTS -->
+    <event type="superstate-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="before-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-create">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-created">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-assign">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="transition">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="after-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="timer">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="superstate-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>  
+    <!-- ACTIONS --> 
+</process-definition>
