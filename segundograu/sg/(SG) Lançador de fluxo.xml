@@ -135,7 +135,7 @@ Descrição: Fluxo lançador de fluxo paralelo.]]></description>
     <node name="(SG) Preparar publicação no DJe">
         <transition to="(SG) É apensar ou desapensar?" name="(SG) É apensar ou desapensar?"/>
         <event type="node-enter">
-            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PUBDJE', processInstance.contextInstance.variables)}"/>
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PUBLICACAO_DJEN', processInstance.contextInstance.variables)}"/>
         </event>
     </node>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').contains('{sg_fbg_apensar_desapensar}') == true ? '(SG) Analisar apensamento ou desapensamento' : '(SG) É encerrar expediente manualmente?'}" name="(SG) É apensar ou desapensar?">

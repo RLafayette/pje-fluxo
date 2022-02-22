@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(SG) Publicação no DJEN">
+    <description><![CDATA[Teste!.]]></description>  
+    <!-- SWIMLANES -->
+    <swimlane name="Magistrado">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853,6:5901')}" actor-id="#{actor.id}"/>
+    </swimlane>
+    <swimlane name="Nó de Desvio - (SG) Publicação no DJEN">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,1342:1469')}"/>
+    </swimlane>
+    <swimlane name="Secretaria">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853')}" actor-id="#{actor.id}"/>
+    </swimlane>
+    <swimlane name="Nó de Desvio - (SG) Publicação em DJEN ou PE">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:1469')}"/>
+    </swimlane>  
+    <!-- START-STATE -->
+    <start-state name="Início">
+        <task name="Tarefa inicial" priority="3"/>
+        <transition to="(SG) Preparar expedientes para publicação - DJEN ou PE" name="(SG) Preparar expedientes para publicação - DJEN ou PE"/>
+    </start-state>  
+    <!-- NODES -->
+    <task-node end-tasks="true" name="(SG) Preparar expedientes para publicação - DJEN ou PE">
+        <task name="(SG) Preparar expedientes para publicação - DJEN ou PE" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="Término" name="Ignorar preparação de expedientes para publicação"/>
+        <transition to="(SG) Separação em Edital ou Diário" name="(SG) Separação em Edital ou Diário">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-start">
+            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
+            <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65')}"/>
+        </event>
+        <event type="task-create">
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Separação em Edital ou Diário')}"/>
+        </event>
+    </task-node>
+    <fork name="(SG) Separação em Edital ou Diário">
+        <transition to="(SG) Possui meio Diário?" name="(SG) Possui meio Diário?"/>
+        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?"/>
+    </fork>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesDiario().size() &gt; 0 ? '(SG) Publicar diário no DJEN' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Diário?">
+        <transition to="(SG) Publicar diário no DJEN" name="(SG) Publicar diário no DJEN"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+    </decision>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Publicar edital na PE' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Publicar edital na PE" name="(SG) Publicar edital na PE"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+    </decision>
+    <node name="(SG) Publicar diário no DJEN">
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+        <event type="node-enter">
+            <action expression="#{publicadorPCP.publicar(comunicacaoProcessualAction.getExpedientesDiario())}"/>
+            <action expression="#{entityManager.createQuery(&quot;update ProcessoParteExpediente ppe set ppe.fechado = false, ppe.cienciaSistema = true, ppe.dtCienciaParte = current_timestamp() where ppe in (select ppe from ProcessoExpediente pe JOIN pe.processoParteExpedienteList ppe WHERE pe in :diarios)&quot;).setParameter(&quot;diarios&quot;, comunicacaoProcessualAction.getExpedientesDiario()).executeUpdate()}"/>
+            <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}"/>
+        </event>
+    </node>
+    <node name="(SG) Publicar edital na PE">
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+        <event type="node-enter">
+            <action expression="#{publicadorPCP.publicar(comunicacaoProcessualAction.getExpedientesEdital())}"/>
+            <action expression="#{entityManager.createQuery(&quot;update ProcessoParteExpediente ppe set ppe.fechado = false, ppe.cienciaSistema = true, ppe.dtCienciaParte = current_timestamp() where ppe in (select ppe from ProcessoExpediente pe JOIN pe.processoParteExpedienteList ppe WHERE pe in :editais)&quot;).setParameter(&quot;editais&quot;, comunicacaoProcessualAction.getExpedientesEdital()).executeUpdate()}"/>
+            <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}"/>
+        </event>
+    </node>
+    <join name="(SG) Junção em Edital ou Diário">
+        <transition to="(SG) Processos com prazo em curso - DJEN ou PE" name="(SG) Processos com prazo em curso - DJEN ou PE"/>
+    </join>
+    <task-node end-tasks="true" name="(SG) Processos com prazo em curso - DJEN ou PE">
+        <task name="(SG) Processos com prazo em curso - DJEN ou PE" swimlane="Secretaria" priority="3"/>
+        <transition to="Término" name="Prosseguir"/>
+        <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+    </task-node>
+    <end-state name="Término"/>
+    <task-node end-tasks="true" name="Nó de Desvio - (SG) Publicação no DJEN">
+        <task name="Nó de Desvio - (SG) Publicação no DJEN" swimlane="Nó de Desvio - (SG) Publicação no DJEN" priority="3"/>
+        <transition to="(SG) Preparar expedientes para publicação - DJEN ou PE" name="(SG) Preparar expedientes para publicação - DJEN ou PE"/>
+        <transition to="(SG) Processos com prazo em curso - DJEN ou PE" name="(SG) Processos com prazo em curso - DJEN ou PE"/>
+        <transition to="Término" name="Término"/>
+    </task-node>  
+    <!-- PROCESS-EVENTS -->
+    <event type="superstate-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="before-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-create">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-created">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-assign">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="transition">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="after-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="timer">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="superstate-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>  
+    <!-- ACTIONS --> 
+</process-definition>

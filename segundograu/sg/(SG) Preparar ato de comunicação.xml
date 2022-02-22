@@ -53,7 +53,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', '(SG) Separação em preparar ato de comunicação')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds', '60,65,69')}"/>
-            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,D,S')}"/>
+            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp')))) : ''}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp')))) : ''}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTemp')))) : ''}"/>
@@ -208,7 +208,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         </event>
     </task-node>
     <fork name="(SG) Separação em preparar ato de comunicação">
-        <transition to="(SG) É edital?" name="(SG) É edital?"/>
         <transition to="(SG) É sistema?" name="(SG) É sistema?"/>
         <transition to="(SG) É pessoalmente?" name="(SG) É pessoalmente?"/>
         <transition to="(SG) É correios?" name="(SG) É correios?"/>
@@ -262,7 +261,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         </event>
     </node>
     <node name="(SG) Lançar movimento de expedição de outros documentos para edital e pessoalmente">
-        <transition to="(SG) Publicação no DJe" name="(SG) Publicação no DJe"/>
+        <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
@@ -272,7 +271,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Lançar movimento de expedição de outros documentos" name="(SG) Lançar movimento de expedição de outros documentos"/>
     </decision>
     <node name="(SG) Lançar movimento de expedição de outros documentos">
-        <transition to="(SG) Publicação no DJe" name="(SG) Publicação no DJe"/>
+        <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('E', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
@@ -281,10 +280,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <sub-process name="(SG) Publicação no DJe" binding="late"/>
         <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
     </process-state>
-    <decision expression="#{entityManager.createQuery(&quot;SELECT COUNT(*) FROM ProcessoParteExpediente AS ppe JOIN ppe.processoExpediente AS pe WHERE ppe.processoJudicial.idProcessoTrf = :idProcessoTrf AND pe.tipoProcessoDocumento.idTipoProcessoDocumento != 34 AND pe.meioExpedicaoExpediente = 'D' AND ppe.dtCienciaParte IS NULL AND ppe.fechado = false&quot;).setParameter(&quot;idProcessoTrf&quot;, tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).getSingleResult() &gt; 0 ? '(SG) Registrar ciência após expedição' : '(SG) Junção em preparar ato de comunicação'}" name="(SG) É edital?">
-        <transition to="(SG) Registrar ciência após expedição" name="(SG) Registrar ciência após expedição"/>
-        <transition to="(SG) Junção em preparar ato de comunicação" name="(SG) Junção em preparar ato de comunicação"/>
-    </decision>
     <process-state name="(SG) Controle de prazo de intimação ou citação expedida">
         <sub-process name="(SG) Controle de prazos" binding="late"/>
         <transition to="(SG) Junção em preparar ato de comunicação" name="(SG) Junção em preparar ato de comunicação"/>
