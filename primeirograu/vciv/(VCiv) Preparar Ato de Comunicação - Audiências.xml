@@ -41,7 +41,7 @@
         <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Lançar movimentações')}"/>
             <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
-            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S,D')}"/>
+            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('E,C,S')}"/>
         </event>
         <event type="node-enter">
             <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
@@ -184,7 +184,7 @@
     </task-node>
     <process-state name="(VCiv) Lançar movimentações">
         <sub-process name="(VCiv) Movimentações PAC" binding="late"/>
-        <transition to="(VCiv) É competência de Fazenda?" name="(VCiv) É competência de Fazenda?"/>
+        <transition to="(VCiv) Separação em controle de prazo" name="(VCiv) Separação em controle de prazo"/>
     </process-state>
     <process-state name="(VCiv) Lançar movimentações mandado">
         <sub-process name="(VCiv) Movimentações PAC" binding="late"/>
@@ -208,10 +208,18 @@
         <transition to="(VCiv) Controlar prazos via correios" name="(VCiv) Controlar prazos via correios"/>
         <transition to="(VCiv) Junção em controle de prazo" name="(VCiv) Junção em controle de prazo"/>
     </decision>
-    <decision expression="#{comunicacaoProcessualAction.getExpedientesEletronico().size() &gt; 0 ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Junção em controle de prazo'}" name="(VCiv) Possui eletrônicos?">
-        <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEletronico().size() &gt; 0 ? '(VCiv) É competência dos Juizados?' : '(VCiv) Junção em controle de prazo'}" name="(VCiv) Possui eletrônicos?">
+        <transition to="(VCiv) É competência dos Juizados?" name="(VCiv) É competência dos Juizados?"/>
         <transition to="(VCiv) Junção em controle de prazo" name="(VCiv) Junção em controle de prazo"/>
     </decision>
+    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:vciv:DefinicaoPublicaDJEN')) ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Publicar intimação de audiência no DJEN'}" name="(VCiv) É competência dos Juizados?">
+        <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
+        <transition to="(VCiv) Publicar intimação de audiência no DJEN" name="(VCiv) Publicar intimação de audiência no DJEN"/>
+    </decision>
+    <process-state name="(VCiv) Publicar intimação de audiência no DJEN">
+        <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
+        <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
+    </process-state>
     <process-state name="(VCiv) Controlar prazos via sistema">
         <sub-process name="(VCiv) Controle de prazos e retorno de expedientes" binding="late"/>
         <transition to="(VCiv) Junção em controle de prazo" name="(VCiv) Junção em controle de prazo"/>
