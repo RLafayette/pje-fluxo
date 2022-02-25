@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(EF) Arquivamento">
-    <description><![CDATA[Código do fluxo: EF_ARQ
-
-Descrição:
-Gestão de arquivamento de processos.]]></description>  
+    <description><![CDATA[Descrição:
+Gestão de arquivamento de processos.
+Código do fluxo: EF_ARQ.]]></description>  
     <!-- SWIMLANES -->
     <swimlane name="Secretaria">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853,6:5901,7:5197')}"/>
@@ -14,12 +13,12 @@ Gestão de arquivamento de processos.]]></description>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
-        <task name="Tarefa inicial" swimlane="Secretaria"/>
+        <task name="Tarefa inicial" swimlane="Secretaria" priority="3"/>
         <transition to="(EF) ~Arquivo - CONFIRMAR" name="(EF) ~Arquivo - CONFIRMAR"/>
     </start-state>  
     <!-- NODES -->
     <task-node end-tasks="true" name="(EF) ~Arquivo - CONFIRMAR">
-        <task name="(EF) ~Arquivo - CONFIRMAR" swimlane="Secretaria">
+        <task name="(EF) ~Arquivo - CONFIRMAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="MovimentarEmLote" mapped-name="movimentarLote:MovimentarEmLote" access="read,write"/>
             </controller>
@@ -37,7 +36,6 @@ Gestão de arquivamento de processos.]]></description>
         <transition to="(EF) Lançar movimento de Arquivo Definitivo" name="Arquivar definitivamente"/>
         <transition to="Término" name="Cancelar e sair da tarefa"/>
         <transition to="(EF) Arquivo provisório (data limite) - DEFINIR" name="Arquivar provisoriamente"/>
-        <transition to="(EF) Lançar movimento de Execuções fiscais aguardando a localização do devedor ou de bens" name="Arquivar e aguardar localização do devedor ou de bens"/>
         <transition to="(EF) Lançar movimento de arquivamento de processos com custas pendentes" name="Arquivar por falta de recolhimento das custas processuais"/>
         <transition to="(EF) Lançar movimentação arquivamento reunião de processos" name="Arquivar - Reunião de processos"/>
         <event type="task-end">
@@ -48,7 +46,7 @@ Gestão de arquivamento de processos.]]></description>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(EF) Arquivo provisório (data limite) - DEFINIR">
-        <task name="(EF) Arquivo provisório (data limite) - DEFINIR" swimlane="Secretaria">
+        <task name="(EF) Arquivo provisório (data limite) - DEFINIR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="ef_cs_data_limite_arquivamento" mapped-name="date:ef_cs_data_limite_arquivamento" access="read,write"/>
             </controller>
@@ -81,7 +79,7 @@ Gestão de arquivamento de processos.]]></description>
         </event>
     </node>
     <task-node end-tasks="true" name="(EF) ~Arquivo definitivo">
-        <task name="(EF) ~Arquivo definitivo" swimlane="Secretaria">
+        <task name="(EF) ~Arquivo definitivo" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Aviso1" mapped-name="textAlert:Aviso1" access="read,write"/>
                 <variable name="MovimentarEmLote" mapped-name="movimentarLote:MovimentarEmLote" access="read,write"/>
@@ -112,14 +110,8 @@ Gestão de arquivamento de processos.]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
         </event>
     </task-node>
-    <node name="(EF) Lançar movimento de Execuções fiscais aguardando a localização do devedor ou de bens">
-        <transition to="(EF) ~Arquivado - Execuções fiscais aguardando a localização do devedor ou de bens" name="(EF) ~Arquivado - Execuções fiscais aguardando a localização do devedor ou de bens"/>
-        <event type="node-enter">
-            <action expression="#{preencherMovimento.deCodigo(50236).lancarMovimento()}"/>
-        </event>
-    </node>
     <task-node end-tasks="true" name="(EF) ~Arquivado - Execuções fiscais aguardando a localização do devedor ou de bens">
-        <task name="(EF) ~Arquivado - Execuções fiscais aguardando a localização do devedor ou de bens" swimlane="Secretaria">
+        <task name="(EF) ~Arquivado - Execuções fiscais aguardando a localização do devedor ou de bens" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="MovimentarEmLote" mapped-name="movimentarLote:MovimentarEmLote" access="read,write"/>
                 <variable name="Aviso1" mapped-name="textAlert:Aviso1" access="read,write"/>
@@ -153,11 +145,11 @@ Gestão de arquivamento de processos.]]></description>
     <node name="(EF) Lançar movimento de arquivamento de processos com custas pendentes">
         <transition to="(EF) ~Arquivado - Processos com custas pendentes" name="(EF) ~Arquivado - Processos com custas pendentes"/>
         <event type="node-enter">
-            <action expression="#{preencherMovimento.deCodigo(50230).lancarMovimento()}"/>
+            <action expression="#{preencherMovimento.deCodigo(246).lancarMovimento()}"/>
         </event>
     </node>
     <task-node end-tasks="true" name="(EF) ~Arquivado - Processos com custas pendentes">
-        <task name="(EF) ~Arquivado - Processos com custas pendentes" swimlane="Secretaria">
+        <task name="(EF) ~Arquivado - Processos com custas pendentes" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="MovimentarEmLote" mapped-name="movimentarLote:MovimentarEmLote" access="read,write"/>
                 <variable name="Aviso1" mapped-name="textAlert:Aviso1" access="read,write"/>
@@ -207,7 +199,7 @@ Gestão de arquivamento de processos.]]></description>
         </event>
     </node>
     <task-node end-tasks="true" name="(EF) ~Arquivo provisório">
-        <task name="(EF) ~Arquivo provisório" swimlane="Secretaria">
+        <task name="(EF) ~Arquivo provisório" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Aviso1" mapped-name="textAlert:Aviso1" access="read,write"/>
             </controller>
@@ -238,7 +230,7 @@ Gestão de arquivamento de processos.]]></description>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(EF) ~Arquivo provisório - art. 40">
-        <task name="(EF) ~Arquivo provisório - art. 40" swimlane="Secretaria">
+        <task name="(EF) ~Arquivo provisório - art. 40" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Aviso1" mapped-name="textAlert:Aviso1" access="read,write"/>
             </controller>
@@ -287,7 +279,7 @@ Gestão de arquivamento de processos.]]></description>
         </event>
     </process-state>
     <task-node end-tasks="true" name="(EF) ~Despachados sobre reativação">
-        <task name="(EF) ~Despachados sobre reativação" swimlane="Secretaria">
+        <task name="(EF) ~Despachados sobre reativação" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Processo_Fluxo_visualizarDecisao" mapped-name="frame:Processo_Fluxo_visualizarDecisao" access="read,write"/>
             </controller>
@@ -331,11 +323,11 @@ Gestão de arquivamento de processos.]]></description>
     <node name="(EF) Lançar movimentação arquivamento reunião de processos">
         <transition to="(EF) ~Arquivado - Reunião de processos" name="(EF) ~Arquivado - Reunião de processos"/>
         <event type="node-enter">
-            <action expression="#{preencherMovimento.deCodigo(50240).lancarMovimento()}"/>
+            <action expression="#{preencherMovimento.deCodigo(246).lancarMovimento()}"/>
         </event>
     </node>
     <task-node end-tasks="true" name="(EF) ~Arquivado - Reunião de processos">
-        <task name="(EF) ~Arquivado - Reunião de processos" swimlane="Secretaria">
+        <task name="(EF) ~Arquivado - Reunião de processos" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="MovimentarEmLote" mapped-name="movimentarLote:MovimentarEmLote" access="read,write"/>
             </controller>
@@ -360,7 +352,7 @@ Gestão de arquivamento de processos.]]></description>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(EF) ~Arquivo com prazo decorrido - ANALISAR">
-        <task name="(EF) ~Arquivo com prazo decorrido - ANALISAR" swimlane="Secretaria">
+        <task name="(EF) ~Arquivo com prazo decorrido - ANALISAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
@@ -385,7 +377,7 @@ Gestão de arquivamento de processos.]]></description>
         <transition to="(EF) Lançar movimento de Desarquivamento" name="Finalizar e sair da tarefa"/>
     </task-node>
     <task-node end-tasks="true" name="(EF) ~Arquivo com prazo decorrido - art. 40 - ANALISAR">
-        <task name="(EF) ~Arquivo com prazo decorrido - art. 40 - ANALISAR" swimlane="Secretaria">
+        <task name="(EF) ~Arquivo com prazo decorrido - art. 40 - ANALISAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
@@ -410,7 +402,7 @@ Gestão de arquivamento de processos.]]></description>
         <transition to="(EF) Lançar movimento de Desarquivamento" name="Finalizar e sair da tarefa"/>
     </task-node>
     <task-node end-tasks="true" name="Nó de Desvio - (EF) Arquivamento">
-        <task name="Nó de Desvio - (EF) Arquivamento" swimlane="Nó de Desvio - (EF) Arquivamento"/>
+        <task name="Nó de Desvio - (EF) Arquivamento" swimlane="Nó de Desvio - (EF) Arquivamento" priority="3"/>
         <transition to="Término" name="Término"/>
         <transition to="(EF) ~Arquivo - CONFIRMAR" name="(EF) ~Arquivo - CONFIRMAR"/>
         <transition to="(EF) ~Arquivo definitivo" name="(EF) ~Arquivo definitivo"/>
