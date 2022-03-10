@@ -74,6 +74,8 @@ Assessoria Segundo Grau  Assessor Geral]]></description>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds','67')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos', 'Cancelar elaboração de ato ordinatório,Documento já assinado!')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
         </event>
         <event type="node-enter">
             <action expression="#{ not empty tramitacaoProcessualService.recuperaVariavel('minutaEmElaboracao') ? processoDocumentoHome.setInstance(processoDocumentoManager.findById(tramitacaoProcessualService.recuperaVariavel('minutaEmElaboracao'))) : '' }"/>
