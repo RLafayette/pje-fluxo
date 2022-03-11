@@ -155,11 +155,12 @@
             <action name="upd" expression="#{empty parametroService.valueOf('pje:fluxo:nomePrefixoTipoFluxo') ? '' : taskInstance.setName(parametroService.valueOf('pje:fluxo:nomePrefixoTipoFluxo').concat(' Processos com prazos decorridos certificados automaticamente'))}"/>
         </event>
         <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao'')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:nomeParteUltimaIntimacao'')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:nomeDocumentoVinculadoUltimaIntimacao'')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:idDocumentoVinculadoUltimaIntimacao'')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:dataCienciaUltimaIntimacao'')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:ultimaIntimacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:idParteUltimaIntimacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:tipoParteUltimaIntimacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:nomeDocumentoVinculadoUltimaIntimacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:idDocumentoVinculadoUltimaIntimacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:capd:dataCienciaUltimaIntimacao')}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="Nó de Desvio - Certidão Automática de Prazos Decorridos">
