@@ -89,7 +89,6 @@ Magistrado  Assessoria Segundo Grau  Assessor Geral]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:votacaoColegiado:ocultaEmenta', false)}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:votacaoColegiado:permiteAssinarRelatorio', false)}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos', 'Solicitar inclusão em pauta')}"/>
-            <action name="upd" expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:votacaoColegiado:ocultaRelatorio', false)}"/>
         </event>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
