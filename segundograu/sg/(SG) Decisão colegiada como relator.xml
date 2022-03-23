@@ -215,6 +215,7 @@ Magistrado  Assessoria Segundo Grau  Assessor
         <transition to="(SG) Pode liberar ao revisor?" name="Encaminhar ao revisor">
             <condition expression="#{parametroUtil.getParametro('pje:tjrn:classesCriminais').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_'))}"/>
         </transition>
+        <transition to="(SG) Encaminhar ao revisor substituto" name="Encaminhar ao revisor substituto"/>
         <transition to="(SG) Sinalizar manualmente o julgamento" name="Encaminhar manualmente para preparação do acórdão">
             <condition expression="#{sessaoPautaProcessoTrfManager.isProcessoJulgadoUltimaSessao(processoJudicialManager.findById(processInstance.contextInstance.getVariable('processo')))}"/>
         </transition>
@@ -299,6 +300,10 @@ Magistrado  Assessoria Segundo Grau  Assessor
         <transition to="(SG) Voto, relatório e ementa - VALIDAR" name="(SG) Voto, relatório e ementa - VALIDAR"/>
         <transition to="(SG) Registrar aptidão para julgamento" name="(SG) Registrar aptidão para julgamento"/>
     </decision>
+    <process-state name="(SG) Encaminhar ao revisor substituto">
+        <sub-process name="(SG) Encaminhamento ao revisor substituto" binding="late"/>
+        <transition to="(SG) Revisão cancelada?" name="(SG) Revisão cancelada?"/>
+    </process-state>
     <node name="(SG) Registrar aptidão para julgamento">
         <transition to="(SG) Sessão de julgamento - AGUARDAR" name="(SG) Sessão de julgamento - AGUARDAR"/>
         <event type="node-enter">
