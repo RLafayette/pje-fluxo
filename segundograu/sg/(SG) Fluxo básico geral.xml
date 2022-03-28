@@ -542,6 +542,11 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
         <transition to="(SG) Pode ir para subfluxo único?" name="(SG) Pode ir para subfluxo único?"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:paj:sub_fluxo_unico', '(SG) Preparação de remessa para o primeiro grau')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_revisarMinuta')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
         </event>
     </node>
     <node name="(SG) Gravar variavel fluxo unico - Cancelar distribuição">
@@ -739,6 +744,11 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
         </event>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:reminst:remessa_primeiro_grau', true)}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_revisarMinuta')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
         </event>
     </process-state>
     <process-state name="(SG) Confirmar cancelamento da distribuição">
