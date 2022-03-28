@@ -83,6 +83,14 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:expedir_carta_rogatoria', false)}"/>
         </event>
     </process-state>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:edital') ? '(VCiv) Edital' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Edital?">
+        <transition to="(VCiv) Edital" name="(VCiv) Edital"/>
+        <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
+    </decision>
+    <process-state name="(VCiv) Edital">
+        <sub-process name="(VCiv) Publicar Edital" binding="late"/>
+        <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
+    </process-state>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:redistribuir') ? '(VCiv) Redistribuir' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Redistribuir?">
         <transition to="(VCiv) Redistribuir" name="(VCiv) Redistribuir"/>
         <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
