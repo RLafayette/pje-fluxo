@@ -111,6 +111,13 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:reminst:remessa_primeiro_grau') == true ? '(SG) Remessa para o primeiro grau - CONFIRMAR' : 'Término'}" name="(SG) É remessa para o primeiro grau?">
         <transition to="(SG) Remessa para o primeiro grau - CONFIRMAR" name="(SG) Remessa para o primeiro grau - CONFIRMAR"/>
         <transition to="Término" name="Término"/>
+        <event type="node-enter">
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_revisarMinuta')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
+        </event>
     </decision>
     <task-node end-tasks="true" name="(SG) Remessa para o primeiro grau - CONFIRMAR">
         <task name="(SG) Remessa para o primeiro grau - CONFIRMAR" swimlane="Secretaria" priority="3">
@@ -139,6 +146,11 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('comboMotivoRemessa')}"/>
         </event>
         <event type="task-create">
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_revisarMinuta')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', '(SG) Remessa para o primeiro grau concluída')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('comboMotivoRemessa', '18;37,38,39,40,90,108,109,110,190,194')}"/>
         </event>
