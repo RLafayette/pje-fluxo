@@ -37,7 +37,7 @@
         <transition to="(VCiv) Aguardando manifestação do Ministério Público" name="(VCiv) Aguardando manifestação do Ministério Público"/>
         <transition to="(VCiv) Encaminhar Carta Rogatória" name="(VCiv) Encaminhar Carta Rogatória"/>
         <transition to="(VCiv) Expedir Carta Rogatória" name="(VCiv) Expedir Carta Rogatória"/>
-        <transition to="(VCiv) Publicar no DJEN" name="(VCiv) Publicar no DJEN"/>
+        <transition to="(VCiv) Publicar intimação no DJEN" name="(VCiv) Publicar intimação no DJEN"/>
         <transition to="(VCiv) Confirmar conteúdo DJe" name="(VCiv) Confirmar conteúdo DJe"/>
         <transition to="(VCiv) Ignorar conteúdo DJe" name="(VCiv) Ignorar conteúdo DJe"/>
         <transition to="(VCiv) Preparar intimação de reativação" name="(VCiv) Preparar intimação de reativação"/>
@@ -48,11 +48,9 @@
         <transition to="(VCiv) Assinar Citação e(ou) intimação pelo chefe de secretaria" name="(VCiv) Assinar Citação e(ou) intimação pelo chefe de secretaria"/>
         <transition to="(VCiv) Assinar Citação e(ou) intimação pelo magistrado" name="(VCiv) Assinar Citação e(ou) intimação pelo magistrado"/>
         <transition to="(VCiv) Informar conteúdo DJe" name="(VCiv) Informar conteúdo DJe"/>
-        <transition to="(VCiv) Publicar no DJEN" name="(VCiv) Publicar no DJEN"/>
     </task-node>
     <fork name="(VCiv) Separação em Preparar Ato de Comunicação">
         <transition to="(VCiv) É citação e(ou) intimação?" name="(VCiv) É citação e(ou) intimação?"/>
-        <transition to="(VCiv) É DJE?" name="(VCiv) É DJE?"/>
         <transition to="(VCiv) É Mandado?" name="(VCiv) É Mandado?"/>
         <transition to="(VCiv) É carta precatória?" name="(VCiv) É carta precatória?"/>
         <transition to="(VCiv) É intimação ao Ministério Público?" name="(VCiv) É intimação ao Ministério Público?"/>
@@ -62,10 +60,6 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:pac:intimar_mp', 'false')}"/>
         </event>
     </fork>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:cumpridec:publicar_dje') ? '(VCiv) Publicar no DJEN' : '(VCiv) Junção em Preparar Ato de Comunicação'}" name="(VCiv) É DJE?">
-        <transition to="(VCiv) Junção em Preparar Ato de Comunicação" name="(VCiv) Junção em Preparar Ato de Comunicação"/>
-        <transition to="(VCiv) Publicar no DJEN" name="(VCiv) Publicar no DJEN"/>
-    </decision>
     <join name="(VCiv) Junção em Preparar Ato de Comunicação">
         <transition to="(VCiv) Apagar variáveis do fluxo" name="Término"/>
     </join>
@@ -218,15 +212,11 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:ProxCitInt')}"/>
         </event>
     </decision>
-    <decision expression="#{processoTrfHome.possuiCompetencia(2) || processoTrfHome.possuiCompetencia(10) || processoTrfHome.possuiCompetencia(27) || processoTrfHome.possuiCompetencia(42) || processoTrfHome.possuiCompetencia(43) || processoTrfHome.possuiCompetencia(71) || processoTrfHome.possuiCompetencia(76) || processoTrfHome.possuiCompetencia(106) || processoTrfHome.possuiCompetencia(107) ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Publicar no DJEN 2'}" name="(VCiv) É competência dos Juizados?">
+    <decision expression="#{processoTrfHome.possuiCompetencia(2) || processoTrfHome.possuiCompetencia(10) || processoTrfHome.possuiCompetencia(27) || processoTrfHome.possuiCompetencia(42) || processoTrfHome.possuiCompetencia(43) || processoTrfHome.possuiCompetencia(71) || processoTrfHome.possuiCompetencia(76) || processoTrfHome.possuiCompetencia(106) || processoTrfHome.possuiCompetencia(107) ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Publicar intimação no DJEN'}" name="(VCiv) É competência dos Juizados?">
         <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
-        <transition to="(VCiv) Publicar no DJEN 2" name="(VCiv) Publicar no DJEN 2"/>
+        <transition to="(VCiv) Publicar intimação no DJEN" name="(VCiv) Publicar intimação no DJEN"/>
     </decision>
-    <process-state name="(VCiv) Publicar no DJEN">
-        <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
-        <transition to="(VCiv) Separação em citação e(ou) intimação" name="(VCiv) Separação em citação e(ou) intimação"/>
-    </process-state>
-    <process-state name="(VCiv) Publicar no DJEN 2">
+    <process-state name="(VCiv) Publicar intimação no DJEN">
         <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
         <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
     </process-state>

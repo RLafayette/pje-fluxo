@@ -18,24 +18,6 @@
         <transition to="(VCiv) Separação em Edital ou Diário" name="(VCiv) Separação em Edital ou Diário"/>
     </start-state>  
     <!-- NODES -->
-    <task-node end-tasks="true" name="(VCiv) Preparar expedientes para o DJEN">
-        <task name="(VCiv) Preparar expedientes para o DJEN" swimlane="Secretaria" priority="3">
-            <controller>
-                <variable name="Processo_Fluxo_expedientes_diario" mapped-name="frame:Processo_Fluxo_expedientes_diario" access="read,write"/>
-            </controller>
-        </task>
-        <transition to="(VCiv) Publicar diário no DJEN" name="Enviar expedientes ao DJEN"/>
-        <transition to="(VCiv) Junção em Edital ou Diário" name="Ignorar preparação de expedientes para o DJEN"/>
-        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
-            <condition expression="#{true}"/>
-        </transition>
-        <event type="task-create">
-            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
-        </event>
-        <event type="task-end">
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
-        </event>
-    </task-node>
     <fork name="(VCiv) Separação em Edital ou Diário">
         <transition to="(VCiv) Possui meio Diário?" name="(VCiv) Possui meio Diário?"/>
         <transition to="(VCiv) Possui meio Edital?" name="(VCiv) Possui meio Edital?"/>
@@ -44,21 +26,64 @@
         <transition to="(VCiv) Preparar expedientes para o DJEN" name="(VCiv) Preparar expedientes para o DJEN"/>
         <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
     </decision>
+    <task-node end-tasks="true" name="(VCiv) Preparar expedientes para o DJEN">
+        <task name="(VCiv) Preparar expedientes para o DJEN" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Processo_Fluxo_expedientes_diario" mapped-name="frame:Processo_Fluxo_expedientes_diario" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="(VCiv) Publicar expediente no DJEN" name="Enviar expedientes ao DJEN"/>
+        <transition to="(VCiv) Ignorar publicação no DJEN" name="Ignorar preparação de expedientes para o DJEN"/>
+        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(VCiv) Ignorar publicação no DJEN">
+        <task name="(VCiv) Ignorar publicação no DJEN" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Aviso_DJEN" mapped-name="textAlert:Aviso_DJEN" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[Variáveis:
+
+Nome: Aviso_DJEN
+Label: Deseja realmente ignorar a publicação no DJEN?
+Escrita: Sim
+Obrig.: Não
+Tipo: Aviso]]></description>
+        <transition to="(VCiv) Preparar expedientes para o DJEN" name="Não"/>
+        <transition to="(VCiv) Junção em Edital ou Diário" name="Sim"/>
+        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+        </event>
+    </task-node>
     <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(VCiv) Publicar edital no DJEN' : '(VCiv) Junção em Edital ou Diário'}" name="(VCiv) Possui meio Edital?">
         <transition to="(VCiv) Publicar edital no DJEN" name="(VCiv) Publicar edital no DJEN"/>
         <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
     </decision>
-    <node name="(VCiv) Publicar diário no DJEN">
+    <node name="(VCiv) Publicar expediente no DJEN">
         <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
         <event type="node-enter">
-            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(new SimpleDateFormat(&quot;dd/MM/yyyy&quot;).format(new Date())).lancarMovimento()}')}"/>
+            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}')}"/>
         </event>
     </node>
     <node name="(VCiv) Publicar edital no DJEN">
         <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
         <event type="node-enter">
-            <action expression="#{publicadorPCP.publicar(comunicacaoProcessualAction.getExpedientesEdital())}"/>
-            <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}"/>
+            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('D', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
+            <action expression="#{entityManager.createQuery(&quot;update ProcessoParteExpediente ppe set ppe.fechado = false, ppe.cienciaSistema = true, ppe.dtCienciaParte = current_timestamp() where ppe in (select ppe from ProcessoExpediente pe JOIN pe.processoParteExpedienteList ppe WHERE pe in (:editais))&quot;).setParameter(&quot;editais&quot;, comunicacaoProcessualAction.getExpedientesEdital()).executeUpdate()}"/>
         </event>
     </node>
     <task-node end-tasks="true" name="(VCiv) Processos com prazo em curso - DJEN">
@@ -77,6 +102,7 @@
         <transition to="Término" name="Término"/>
         <transition to="(VCiv) Preparar expedientes para o DJEN" name="(VCiv) Preparar expedientes para o DJEN"/>
         <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
+        <transition to="(VCiv) Ignorar publicação no DJEN" name="(VCiv) Ignorar publicação no DJEN"/>
     </task-node>  
     <!-- PROCESS-EVENTS -->
     <event type="superstate-enter">
@@ -126,6 +152,5 @@
     </event>
     <event type="node-enter">
         <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
-    </event>  
-    <!-- ACTIONS --> 
+    </event> 
 </process-definition>
