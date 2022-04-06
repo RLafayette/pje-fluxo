@@ -50,14 +50,24 @@ Descrição: Fluxo lançador de fluxo paralelo.]]></description>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_EXPDOC', processInstance.contextInstance.variables)}"/>
         </event>
     </node>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').contains('{sg_fbg_intimar_citar}') == true ? '(SG) Expedição de intimação ou citação' : '(SG) É intimação ou citação ao MP?'}" name="(SG) É intimação ou citação genérica?">
-        <transition to="(SG) É intimação ou citação ao MP?" name="(SG) É intimação ou citação ao MP?"/>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').contains('{sg_fbg_intimar_citar}') == true ? '(SG) Expedição de intimação ou citação' : '(SG) É intimação ou citação de edital?'}" name="(SG) É intimação ou citação genérica?">
+        <transition to="(SG) É intimação ou citação de edital?" name="(SG) É intimação ou citação de edital?"/>
         <transition to="(SG) Expedição de intimação ou citação" name="(SG) Expedição de intimação ou citação"/>
     </decision>
     <node name="(SG) Expedição de intimação ou citação">
-        <transition to="(SG) É intimação ou citação ao MP?" name="(SG) É intimação ou citação ao MP?"/>
+        <transition to="(SG) É intimação ou citação de edital?" name="(SG) É intimação ou citação de edital?"/>
         <event type="node-enter">
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PAC', processInstance.contextInstance.variables)}"/>
+        </event>
+    </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').contains('{sg_fbg_intimar_citar_edital}') == true ? '(SG) Expedição de intimação ou citação de edital' : '(SG) É intimação ou citação ao MP?'}" name="(SG) É intimação ou citação de edital?">
+        <transition to="(SG) É intimação ou citação ao MP?" name="(SG) É intimação ou citação ao MP?"/>
+        <transition to="(SG) Expedição de intimação ou citação de edital" name="(SG) Expedição de intimação ou citação de edital"/>
+    </decision>
+    <node name="(SG) Expedição de intimação ou citação de edital">
+        <transition to="(SG) É intimação ou citação ao MP?" name="(SG) É intimação ou citação ao MP?"/>
+        <event type="node-enter">
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PUB_EDITAL', processInstance.contextInstance.variables)}"/>
         </event>
     </node>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').contains('{sg_fbg_intimar_citar_mp}') == true ? '(SG) Expedição de intimação ou citação ao MP' : '(SG) É expedir carta?'}" name="(SG) É intimação ou citação ao MP?">

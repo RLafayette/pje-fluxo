@@ -255,12 +255,12 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Junção em preparar ato de comunicação" name="(SG) Junção em preparar ato de comunicação"/>
     </decision>
     <node name="(SG) Registrar ciência após expedição">
-        <transition to="(SG) Lançar movimento de expedição de outros documentos para edital e pessoalmente" name="(SG) Lançar movimento de expedição de outros documentos para edital e pessoalmente"/>
+        <transition to="(SG) Lançar movimento de expedição de outros documentos para pessoalmente" name="(SG) Lançar movimento de expedição de outros documentos para pessoalmente"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.registrarCienciaExpedientePessoal()}"/>
         </event>
     </node>
-    <node name="(SG) Lançar movimento de expedição de outros documentos para edital e pessoalmente">
+    <node name="(SG) Lançar movimento de expedição de outros documentos para pessoalmente">
         <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
         <event type="node-enter">
             <action expression="#{preencherMovimento.deCodigo(60).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
@@ -271,11 +271,15 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Lançar movimento de expedição de outros documentos" name="(SG) Lançar movimento de expedição de outros documentos"/>
     </decision>
     <node name="(SG) Lançar movimento de expedição de outros documentos">
-        <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
+        <transition to="(SG) Publicar no DJEN" name="(SG) Publicar no DJEN"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('E', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
     </node>
+    <process-state name="(SG) Publicar no DJEN">
+        <sub-process name="(SG) Publicação no DJEN" binding="late"/>
+        <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
+    </process-state>
     <process-state name="(SG) Publicação no DJe">
         <sub-process name="(SG) Publicação no DJe" binding="late"/>
         <transition to="(SG) Controle de prazo de intimação ou citação expedida" name="(SG) Controle de prazo de intimação ou citação expedida"/>
