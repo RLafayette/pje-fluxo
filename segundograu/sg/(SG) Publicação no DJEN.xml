@@ -33,7 +33,7 @@ Secretaria  Secretaria Segundo Grau  Chefe de Secretaria  Secretaria Segundo Gra
             </controller>
         </task>
         <transition to="(SG) Publicar expediente no DJEN" name="Enviar expedientes ao DJEN"/>
-        <transition to="(SG) Ignorar publicação no DJEN" name="Ignorar preparação de expedientes para o DJEN"/>
+        <transition to="(SG) Publicação no DJEN - IGNORAR" name="Ignorar preparação de expedientes para o DJEN"/>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
         </transition>
@@ -44,8 +44,8 @@ Secretaria  Secretaria Segundo Grau  Chefe de Secretaria  Secretaria Segundo Gra
             <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
         </event>
     </task-node>
-    <task-node end-tasks="true" name="(SG) Ignorar publicação no DJEN">
-        <task name="(SG) Ignorar publicação no DJEN" swimlane="Secretaria" priority="3">
+    <task-node end-tasks="true" name="(SG) Publicação no DJEN - IGNORAR">
+        <task name="(SG) Publicação no DJEN - IGNORAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="Aviso_DJEN" mapped-name="textAlert:Aviso_DJEN" access="read,write"/>
             </controller>
@@ -74,11 +74,18 @@ Tipo: Aviso]]></description>
         <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
     </decision>
     <node name="(SG) Publicar expediente no DJEN">
-        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
+        <transition to="(SG) Publicou no DJEN?" name="(SG) Publicou no DJEN?"/>
         <event type="node-enter">
-            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:qntPublicadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
         </event>
     </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:tjrn:qntPublicadosDjen').equals(comunicacaoProcessualAction.getExpedientesEletronico().size()) ? '(SG) Publicação no DJEN - AGUARDAR' : '(SG) Diário da Justiça Eletrônico Nacional - PREPARAR'}" name="(SG) Publicou no DJEN?">
+        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
+        <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:qntPublicadosDjen')}"/>
+        </event>
+    </decision>
     <node name="(SG) Publicar edital no DJEN">
         <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
         <event type="node-enter">
@@ -102,7 +109,7 @@ Tipo: Aviso]]></description>
         <transition to="Término" name="Término"/>
         <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR"/>
         <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
-        <transition to="(SG) Ignorar publicação no DJEN" name="(SG) Ignorar publicação no DJEN"/>
+        <transition to="(SG) Publicação no DJEN - IGNORAR" name="(SG) Publicação no DJEN - IGNORAR"/>
     </task-node>  
     <!-- PROCESS-EVENTS -->
     <event type="superstate-enter">

@@ -2,15 +2,15 @@
 
 <process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(SG) Publicar Edital">
     <description><![CDATA[SG_PUB_EDITAL]]></description>  
-    <!-- SWIMLANES -->
+    <!-- SWIMLANES --> 
     <swimlane name="Magistrado">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853,6:5901')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('599:1469,600:5899,600:5898,600:5197,600:5907,6:1469,5:5899,5:5898,5:5197,5:5907')}"/>
     </swimlane>
     <swimlane name="Nó de Desvio - (SG) Publicar Edital">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:1469')}"/>
+        <assignment actor-id="#{actor.id}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
@@ -33,12 +33,12 @@
    Tipo: Frame]]></description>
         <transition to="Término" name="Ignorar preparação de edital"/>
         <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura do(a) secretário(a)">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:AntCitInt', '(SG) Edital - EXPEDIR')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:ProxCitInt', '(SG) Secretário(a) [EDITAL] - ASSINAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Edital - EXPEDIR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Secretário(a) [EDITAL] - ASSINAR')}"/>
         </transition>
         <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura pelo gabinete">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:AntCitInt', '(SG) Edital - EXPEDIR')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:ProxCitInt', '(SG) Edital pendente de assinatura pelo gabinete - ASSINAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Edital - EXPEDIR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Edital pendente de assinatura pelo gabinete - ASSINAR')}"/>
         </transition>
         <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?">
             <condition expression="#{true}"/>
@@ -67,7 +67,7 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-start">
             <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('D')}"/>
@@ -91,14 +91,14 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura pelo gabinete">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:AntCitInt', '(SG) Secretário(a) [EDITAL] - ASSINAR')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:ProxCitInt', '(SG) Edital pendente de assinatura pelo gabinete - ASSINAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Secretário(a) [EDITAL] - ASSINAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Edital pendente de assinatura pelo gabinete - ASSINAR')}"/>
         </transition>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Possui meio Edital?')}"/>
@@ -166,14 +166,14 @@
             <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
         </event>
     </task-node>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('pg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('pg:tjrn:AntCitInt') }" name="(SG) Encaminhar para assinatura de edital?">
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('sg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('sg:tjrn:AntCitInt') }" name="(SG) Encaminhar para assinatura de edital?">
         <transition to="(SG) Secretário(a) [EDITAL] - ASSINAR" name="(SG) Secretário(a) [EDITAL] - ASSINAR"/>
         <transition to="(SG) Edital - EXPEDIR" name="(SG) Edital - EXPEDIR"/>
         <transition to="(SG) Deslocar OJ origem citacao" name="(SG) Edital pendente de assinatura pelo gabinete - ASSINAR"/>
         <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:CitIntValidaParaAss')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:AntCitInt')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:ProxCitInt')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:CitIntValidaParaAss')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:AntCitInt')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:ProxCitInt')}"/>
         </event>
     </decision>
     <node name="(SG) Deslocar OJ origem citacao">
@@ -196,7 +196,7 @@
         <transition to="Término" name="Término"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('idTaskInstanceTempEdital')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:CitIntValidaParaAss')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:CitIntValidaParaAss')}"/>
         </event>
     </node>
     <end-state name="Término"/>

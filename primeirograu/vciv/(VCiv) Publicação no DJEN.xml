@@ -74,11 +74,18 @@ Tipo: Aviso]]></description>
         <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
     </decision>
     <node name="(VCiv) Publicar expediente no DJEN">
-        <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
+        <transition to="(VCiv) Publicou no DJEN?" name="(VCiv) Publicou no DJEN?"/>
         <event type="node-enter">
-            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:qntPublicadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
         </event>
     </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pg:tjrn:qntPublicadosDjen').equals(comunicacaoProcessualAction.getExpedientesEletronico().size()) ? '(VCiv) Processos com prazo em curso - DJEN' : '(VCiv) Preparar expedientes para o DJEN'}" name="(VCiv) Publicou no DJEN?">
+        <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
+        <transition to="(VCiv) Preparar expedientes para o DJEN" name="(VCiv) Preparar expedientes para o DJEN"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:qntPublicadosDjen')}"/>
+        </event>
+    </decision>
     <node name="(VCiv) Publicar edital no DJEN">
         <transition to="(VCiv) Processos com prazo em curso - DJEN" name="(VCiv) Processos com prazo em curso - DJEN"/>
         <event type="node-enter">
