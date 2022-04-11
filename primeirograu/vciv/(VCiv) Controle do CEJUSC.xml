@@ -598,7 +598,7 @@ aviso4:A opção "CEJUSC - DPVAT - PERÍCIA" encaminhará o processo para a realizaç
         <transition to="(CEJUSC) É NATAL ?" name="CEJUSC - DPVAT"/>
         <transition to="(CEJUSC) É NATAL DPVAT PERÍCIA ?" name="CEJUSC - DPVAT - PERÍCIA"/>
         <transition to="(CEJUSC) É CEJUSC SAÚDE?" name="CEJUSC SAÚDE">
-            <condition expression="#{authenticator.getOrgaoJulgadorAtual().getJurisdicao().getIdJurisdicao() == 8}"/>
+            <condition expression="#{authenticator.getOrgaoJulgadorAtual().getJurisdicao().getIdJurisdicao() == 8 || authenticator.getOrgaoJulgadorAtual().getJurisdicao().getIdJurisdicao() == 12 || authenticator.getOrgaoJulgadorAtual().getJurisdicao().getIdJurisdicao() == 13 || authenticator.getIdLocalizacaoAtual() == 88529}"/>
         </transition>
         <transition to="(CEJUSC) Designar audiência" name="CEJUSC"/>
     </task-node>
