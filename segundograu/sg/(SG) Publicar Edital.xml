@@ -40,11 +40,11 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Edital - EXPEDIR')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Edital pendente de assinatura pelo gabinete - ASSINAR')}"/>
         </transition>
-        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Publicar edital no DJEN" name="(SG) Publicar edital no DJEN">
             <condition expression="#{true}"/>
         </transition>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Possui meio Edital?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Publicar edital no DJEN')}"/>
             <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
             <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('D')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
@@ -83,7 +83,7 @@
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
         </task>
-        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Publicar edital no DJEN" name="(SG) Publicar edital no DJEN">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(SG) Edital - EXPEDIR" name="Retornar para expedição de citação e(ou) intimação"/>
@@ -101,7 +101,7 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Possui meio Edital?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Publicar edital no DJEN')}"/>
             <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('D')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
@@ -134,7 +134,7 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(SG) Edital - EXPEDIR" name="Retornar para expedição de citação e (ou) intimação"/>
-        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Publicar edital no DJEN" name="(SG) Publicar edital no DJEN">
             <condition expression="#{true}"/>
         </transition>
         <event type="task-end">
@@ -143,7 +143,7 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Possui meio Edital?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Publicar edital no DJEN')}"/>
             <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('D')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
@@ -184,10 +184,6 @@
             <action expression="#{tramitacaoProcessualService.deslocarFluxoParaOrgaoDiverso(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf, tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:orgaoDestino'), tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:orgaoCargoDestino'), tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:colegiadoDestino'))}"/>
         </event>
     </node>
-    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Publicar edital no DJEN' : 'Término'}" name="(SG) Possui meio Edital?">
-        <transition to="(SG) Publicar edital no DJEN" name="(SG) Publicar edital no DJEN"/>
-        <transition to="Término" name="Término"/>
-    </decision>
     <process-state name="(SG) Publicar edital no DJEN">
         <sub-process name="(SG) Publicação no DJEN" binding="late"/>
         <transition to="(SG) Apagar variáveis do fluxo" name="(SG) Apagar variáveis do fluxo"/>

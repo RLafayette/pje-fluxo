@@ -212,7 +212,7 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:ProxCitInt')}"/>
         </event>
     </decision>
-    <decision expression="#{processoTrfHome.possuiCompetencia(2) || processoTrfHome.possuiCompetencia(10) || processoTrfHome.possuiCompetencia(27) || processoTrfHome.possuiCompetencia(42) || processoTrfHome.possuiCompetencia(43) || processoTrfHome.possuiCompetencia(71) || processoTrfHome.possuiCompetencia(76) || processoTrfHome.possuiCompetencia(106) || processoTrfHome.possuiCompetencia(107) ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Publicar intimação no DJEN'}" name="(VCiv) É competência dos Juizados?">
+    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:vciv:DefinicaoPublicaDJEN')) ? '(VCiv) Controlar prazos via sistema' : '(VCiv) Publicar intimação no DJEN'}" name="(VCiv) É competência dos Juizados?">
         <transition to="(VCiv) Controlar prazos via sistema" name="(VCiv) Controlar prazos via sistema"/>
         <transition to="(VCiv) Publicar intimação no DJEN" name="(VCiv) Publicar intimação no DJEN"/>
     </decision>
