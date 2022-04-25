@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(SG) Publicação no DJEN">
+    <description><![CDATA[Código do fluxo: SG_PUB_DJEN
+    Descrição: Fluxo destinado a publicação de expedientes no diário da justiça eletrônico.
+    Raia        Localização              Papel
+Secretaria  Secretaria Segundo Grau  Chefe de Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>  
+    <!-- SWIMLANES -->
+    <swimlane name="Nó de Desvio - (SG) Publicação no DJEN">
+        <assignment actor-id="#{actor.id}"/>
+    </swimlane>
+    <swimlane name="Secretaria">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
+    </swimlane>  
+    <!-- START-STATE -->
+    <start-state name="Início">
+        <task name="Tarefa inicial" priority="3"/>
+        <transition to="(SG) Separação em Edital ou Diário" name="(SG) Separação em Edital ou Diário"/>
+    </start-state>  
+    <!-- NODES -->
+    <fork name="(SG) Separação em Edital ou Diário">
+        <transition to="(SG) Possui meio Diário?" name="(SG) Possui meio Diário?"/>
+        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?"/>
+    </fork>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEletronico().size() &gt; 0 ? '(SG) Diário da Justiça Eletrônico Nacional - PREPARAR' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Diário?">
+        <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+    </decision>
+    <task-node end-tasks="true" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR">
+        <task name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Processo_Fluxo_expedientes_diario" mapped-name="frame:Processo_Fluxo_expedientes_diario" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="(SG) Publicar expediente no DJEN" name="Enviar expedientes ao DJEN"/>
+        <transition to="(SG) Publicação no DJEN - IGNORAR" name="Ignorar preparação de expedientes para o DJEN"/>
+        <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(SG) Publicação no DJEN - IGNORAR">
+        <task name="(SG) Publicação no DJEN - IGNORAR" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Aviso_DJEN" mapped-name="textAlert:Aviso_DJEN" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[Variáveis:
+
+Nome: Aviso_DJEN
+Label: Deseja realmente ignorar a publicação no DJEN?
+Escrita: Sim
+Obrig.: Não
+Tipo: Aviso]]></description>
+        <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="Não"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="Sim"/>
+        <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+        </event>
+    </task-node>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Publicar edital no DJEN' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Publicar edital no DJEN" name="(SG) Publicar edital no DJEN"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+    </decision>
+    <node name="(SG) Publicar expediente no DJEN">
+        <transition to="(SG) Publicou no DJEN?" name="(SG) Publicou no DJEN?"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:qntPublicadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
+        </event>
+    </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:tjrn:qntPublicadosDjen').equals(comunicacaoProcessualAction.getExpedientesEletronico().size()) ? '(SG) Publicação no DJEN - AGUARDAR' : '(SG) Diário da Justiça Eletrônico Nacional - PREPARAR'}" name="(SG) Publicou no DJEN?">
+        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
+        <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:qntPublicadosDjen')}"/>
+        </event>
+    </decision>
+    <node name="(SG) Publicar edital no DJEN">
+        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
+        <event type="node-enter">
+            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('D', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
+            <action expression="#{entityManager.createQuery(&quot;update ProcessoParteExpediente ppe set ppe.fechado = false, ppe.cienciaSistema = true, ppe.dtCienciaParte = current_timestamp() where ppe in (select ppe from ProcessoExpediente pe JOIN pe.processoParteExpedienteList ppe WHERE pe in (:editais))&quot;).setParameter(&quot;editais&quot;, comunicacaoProcessualAction.getExpedientesEdital()).executeUpdate()}"/>
+        </event>
+    </node>
+    <task-node end-tasks="true" name="(SG) Publicação no DJEN - AGUARDAR">
+        <task name="(SG) Publicação no DJEN - AGUARDAR" swimlane="Secretaria" priority="3"/>
+        <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Junção em Edital ou Diário" name="Prosseguir"/>
+    </task-node>
+    <join name="(SG) Junção em Edital ou Diário">
+        <transition to="Término" name="Término"/>
+    </join>
+    <end-state name="Término"/>
+    <task-node end-tasks="true" name="Nó de Desvio - (SG) Publicação no DJEN">
+        <task name="Nó de Desvio - (SG) Publicação no DJEN" swimlane="Nó de Desvio - (SG) Publicação no DJEN" priority="3"/>
+        <transition to="Término" name="Término"/>
+        <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR"/>
+        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
+        <transition to="(SG) Publicação no DJEN - IGNORAR" name="(SG) Publicação no DJEN - IGNORAR"/>
+    </task-node>  
+    <!-- PROCESS-EVENTS -->
+    <event type="superstate-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="before-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-create">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-created">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-assign">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="transition">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="after-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="timer">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="superstate-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event> 
+</process-definition>
