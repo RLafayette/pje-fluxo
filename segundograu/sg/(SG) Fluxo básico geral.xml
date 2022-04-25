@@ -94,7 +94,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
                 <variable name="sg_fbg_expedir_oficio" mapped-name="sim_nao:sg_fbg_expedir_oficio" access="read,write"/>
                 <variable name="sg_fbg_expedir_outros_documentos" mapped-name="sim_nao:sg_fbg_expedir_outros_documentos" access="read,write"/>
                 <variable name="sg_fbg_intimar_citar" mapped-name="sim_nao:sg_fbg_intimar_citar" access="read,write"/>
-                <variable name="sg_fbg_intimar_citar_edital" mapped-name="sim_nao:sg_fbg_intimar_citar_edital" access="read,write"/>
                 <variable name="sg_fbg_intimar_citar_estado" mapped-name="sim_nao:sg_fbg_intimar_citar_estado" access="read,write"/>
                 <variable name="sg_fbg_intimar_citar_mp" mapped-name="sim_nao:sg_fbg_intimar_citar_mp" access="read,write"/>
                 <variable name="sg_fbg_retificar_tipo_documento" mapped-name="sim_nao:sg_fbg_retificar_tipo_documento" access="read,write"/>
@@ -177,13 +176,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
    Tipo: Checkbox
 
 12. Variável: sg_fbg_intimar_citar
-   Label: Intimar ou citar via sistema ou correios
-   Escrita: Sim
-   Obrig. Não
-   Tipo: Checkbox
-
-12.1. Variável: sg_fbg_intimar_citar_edital
-   Label: Intimar ou citar via edital
+   Label: Intimar ou citar via sistema, correios ou edital
    Escrita: Sim
    Obrig. Não
    Tipo: Checkbox
@@ -273,7 +266,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_expedir_oficio') == true ? '{sg_fbg_expedir_oficio}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_expedir_outros_documentos') == true ? '{sg_fbg_expedir_outros_documentos}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar') == true ? '{sg_fbg_intimar_citar}' : ''))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_edital') == true ? '{sg_fbg_intimar_citar_edital}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_estado') == true ? '{sg_fbg_intimar_citar_estado}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_mp') == true ? '{sg_fbg_intimar_citar_mp}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_retificar_tipo_documento') == true ? '{sg_fbg_retificar_tipo_documento}' : ''))}"/>
@@ -283,7 +275,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_certificar_decurso_prazo')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_certificar_transito_julgado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_estado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_mp')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_expedir_carta')}"/>
@@ -305,7 +296,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_certificar_decurso_prazo')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_certificar_transito_julgado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar_edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar_estado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar_mp')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_expedir_carta')}"/>
@@ -347,7 +337,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
                 <variable name="sg_fbg_expedir_oficio" mapped-name="sim_nao:sg_fbg_expedir_oficio" access="read,write"/>
                 <variable name="sg_fbg_expedir_outros_documentos" mapped-name="sim_nao:sg_fbg_expedir_outros_documentos" access="read,write"/>
                 <variable name="sg_fbg_intimar_citar" mapped-name="sim_nao:sg_fbg_intimar_citar" access="read,write"/>
-                <variable name="sg_fbg_intimar_citar_edital" mapped-name="sim_nao:sg_fbg_intimar_citar_edital" access="read,write"/>
                 <variable name="sg_fbg_intimar_citar_estado" mapped-name="sim_nao:sg_fbg_intimar_citar_estado" access="read,write"/>
                 <variable name="sg_fbg_intimar_citar_mp" mapped-name="sim_nao:sg_fbg_intimar_citar_mp" access="read,write"/>
                 <variable name="sg_fbg_retificar_tipo_documento" mapped-name="sim_nao:sg_fbg_retificar_tipo_documento" access="read,write"/>
@@ -423,13 +412,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
    Tipo: Checkbox
 
 12. Variável: sg_fbg_intimar_citar
-   Label: Intimar ou citar via sistema ou correios
-   Escrita: Sim
-   Obrig. Não
-   Tipo: Checkbox
-
-12.1. Variável: sg_fbg_intimar_citar_edital
-   Label: Intimar ou citar via edital
+   Label: Intimar ou citar via sistema, correios ou edital
    Escrita: Sim
    Obrig. Não
    Tipo: Checkbox
@@ -477,7 +460,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_expedir_oficio') == true ? '{sg_fbg_expedir_oficio}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_expedir_outros_documentos') == true ? '{sg_fbg_expedir_outros_documentos}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar') == true ? '{sg_fbg_intimar_citar}' : ''))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_edital') == true ? '{sg_fbg_intimar_citar_edital}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_estado') == true ? '{sg_fbg_intimar_citar_estado}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_mp') == true ? '{sg_fbg_intimar_citar_mp}' : ''))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_retificar_tipo_documento') == true ? '{sg_fbg_retificar_tipo_documento}' : ''))}"/>
@@ -487,7 +469,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_certificar_decurso_prazo')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_certificar_transito_julgado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_estado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_intimar_citar_mp')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:sg_fbg_expedir_carta')}"/>
@@ -513,7 +494,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_certificar_decurso_prazo')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_certificar_transito_julgado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar_edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar_estado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_intimar_citar_mp')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg_fbg_expedir_carta')}"/>

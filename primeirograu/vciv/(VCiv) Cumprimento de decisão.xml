@@ -25,7 +25,6 @@
     <fork name="(VCiv) Separação em cumprimento de decisão">
         <transition to="(VCiv) Suspender?" name="(VCiv) Suspender?"/>
         <transition to="(VCiv) Citar e(ou) intimar?" name="(VCiv) Citar e(ou) intimar?"/>
-        <transition to="(VCiv) Edital?" name="(VCiv) Edital?"/>
         <transition to="(VCiv) Redistribuir?" name="(VCiv) Redistribuir?"/>
         <transition to="(VCiv) Certificar decurso de prazo?" name="(VCiv) Certificar decurso de prazo?"/>
         <transition to="(VCiv) Arquivar?" name="(VCiv) Arquivar?"/>
@@ -83,14 +82,6 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:intimar_mp', false)}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:expedir_carta_rogatoria', false)}"/>
         </event>
-    </process-state>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:edital') ? '(VCiv) Edital' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Edital?">
-        <transition to="(VCiv) Edital" name="(VCiv) Edital"/>
-        <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
-    </decision>
-    <process-state name="(VCiv) Edital">
-        <sub-process name="(VCiv) Publicar Edital" binding="late"/>
-        <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
     </process-state>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:redistribuir') ? '(VCiv) Redistribuir' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Redistribuir?">
         <transition to="(VCiv) Redistribuir" name="(VCiv) Redistribuir"/>
@@ -366,8 +357,17 @@
         <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
     </decision>
     <process-state name="(VCiv) Publicação no DJE">
-        <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
+        <sub-process name="(VCiv) Preparar Ato de Comunicação" binding="late"/>
         <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:publicar_dje', true)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:citar_intimar', false)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:expedir_mandado', false)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:expedir_carta_precatoria', false)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:citar_intimar_audiencia', false)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:intimar_mp', false)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:expedir_carta_rogatoria', false)}"/>
+        </event>
     </process-state>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:expedir_alvara') ? '(VCiv) Expedição de Alvará' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Expedir Alvará?">
         <transition to="(VCiv) Expedição de Alvará" name="(VCiv) Expedição de Alvará"/>
@@ -655,7 +655,9 @@
         <transition to="Nó de Desvio - (VCiv) Cumprimento de decisão" name="Nó de Desvio - (VCiv) Cumprimento de decisão">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(VCiv) Processos devolvidos pela COJUD" name="Devolver para a secretaria"/>
+        <transition to="(VCiv) Processos devolvidos pela COJUD" name="Devolver para a secretaria">
+            <condition expression="#{true}"/>
+        </transition>
         <event type="task-end">
             <action expression="#{preencherMovimento.deCodigo(980).comComplementoDeCodigo(7).preencherComTexto('juízo de origem').lancarMovimento()}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>

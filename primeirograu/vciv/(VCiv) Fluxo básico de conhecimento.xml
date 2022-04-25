@@ -2,14 +2,13 @@
 
 <process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(VCiv) Fluxo básico de conhecimento">
     <description><![CDATA[Fluxo básico de conhecimento para varas cíveis da justiça comum..
-Aguardar Perícia / Laudo Técnico / Outros...
-Código: VCiv_FBC]]></description>  
+Aguardar Perícia / Laudo Técnico / Outros...]]></description>  
     <!-- SWIMLANES -->
     <swimlane name="Nó de Desvio - (VCiv) Fluxo básico de conhecimento">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('-1:1338,1342:1469')}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,6:1469,8:5852,8:5853')}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,6:1469,8:5852,8:5853')}" />
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
@@ -127,7 +126,6 @@ Código: VCiv_FBC]]></description>
                 <variable name="vciv_fbc_certificar_decurso" mapped-name="sim_nao:vciv_fbc_certificar_decurso" access="read,write"/>
                 <variable name="vciv_fbc_certificar_transito" mapped-name="sim_nao:vciv_fbc_certificar_transito" access="read,write"/>
                 <variable name="vciv_fbc_citar_intimar" mapped-name="sim_nao:vciv_fbc_citar_intimar" access="read,write"/>
-                <variable name="vciv_fbc_edital" mapped-name="sim_nao:vciv_fbc_edital" access="read,write"/>
                 <variable name="vciv_fbc_controlar_audiencia" mapped-name="sim_nao:vciv_fbc_controlar_audiencia" access="read,write"/>
                 <variable name="vciv_fbc_controlar_retorno_expediente" mapped-name="sim_nao:vciv_fbc_controlar_retorno_expediente" access="read,write"/>
                 <variable name="vciv_fbc_encaminhar_cejusc" mapped-name="sim_nao:vciv_fbc_encaminhar_cejusc" access="read,write"/>
@@ -166,40 +164,46 @@ Código: VCiv_FBC]]></description>
         <transition to="(VCiv) Conclusão para decisão" name="06 - Enviar concluso para decisão">
             <condition expression="#{! (parametroUtil.getParametro('pje:tjrn:classesVEF').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_')) &amp;&amp; parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:espec:ids').contains(' '.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat(' ')) ) }"/>
         </transition>
-        <transition to="(VCiv) Encaminhar gabinete - decisão" name="07 - Enviar concluso para decisão - Execução Fiscal">
+        <transition to="(VCiv) Encaminhar gabinete - decisão" name="06 - Enviar concluso para decisão - Execução Fiscal">
             <condition expression="#{ parametroUtil.getParametro('pje:tjrn:classesVEF').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_')) &amp;&amp; parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:espec:ids').contains(' '.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat(' ')) }"/>
         </transition>
-        <transition to="(VCiv) Conclusão para decisão de urgência" name="08 - Enviar concluso para decisão de urgência"/>
-        <transition to="(VCiv) Conclusão para decisão de Emb. de Declaração" name="09 - Enviar concluso para decisão de Emb. de Declaração"/>
-        <transition to="(VCiv) Conclusão para decisão sobre recurso" name="10 - Enviar concluso para decisão sobre recurso"/>
-        <transition to="(VCiv) Conclusão para decisão de penhora online" name="11 - Enviar concluso para decisão de penhora online"/>
-        <transition to="(VCiv) Conclusão para decisão sobre desbloqueio" name="12 - Enviar concluso para decisão de desbloqueio"/>
-        <transition to="(VCiv) Conclusão para decisão sobre suspensão" name="13 - Enviar concluso para decisão de suspensão"/>
-        <transition to="(VCiv) Conclusão para despacho" name="14 - Enviar concluso para despacho">
+        <transition to="(VCiv) Conclusão para decisão de urgência" name="07 - Enviar concluso para decisão de urgência"/>
+        <transition to="(VCiv) Conclusão para decisão de Emb. de Declaração" name="08 - Enviar concluso para decisão de Emb. de Declaração"/>
+        <transition to="(VCiv) Conclusão para decisão sobre recurso" name="09 - Enviar concluso para decisão sobre recurso"/>
+        <transition to="(VCiv) Conclusão para decisão de penhora online" name="10 - Enviar concluso para decisão de penhora online"/>
+        <transition to="(VCiv) Conclusão para decisão sobre desbloqueio" name="11 - Enviar concluso para decisão de desbloqueio"/>
+        <transition to="(VCiv) Conclusão para decisão sobre suspensão" name="12 - Enviar concluso para decisão de suspensão"/>
+        <transition to="(VCiv) Conclusão para despacho" name="13 - Enviar concluso para despacho">
             <condition expression="#{! (parametroUtil.getParametro('pje:tjrn:classesVEF').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_')) &amp;&amp; parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:espec:ids').contains(' '.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat(' ')) ) }"/>
         </transition>
-        <transition to="(VCiv) Encaminhar gabinete - despacho" name="15 - Enviar concluso para despacho - Execução Fiscal">
+        <transition to="(VCiv) Encaminhar gabinete - despacho" name="13 - Enviar concluso para despacho - Execução Fiscal">
             <condition expression="#{ parametroUtil.getParametro('pje:tjrn:classesVEF').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_')) &amp;&amp; parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:espec:ids').contains(' '.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat(' ')) }"/>
         </transition>
-        <transition to="(VCiv) Conclusão para despacho de cumprimento de sentença" name="16 - Enviar concluso para despacho de cumprimento de sentença"/>
-        <transition to="(VCiv) Conclusão para sentença" name="17 - Enviar concluso para sentença">
+        <transition to="(VCiv) Conclusão para despacho de cumprimento de sentença" name="14 - Enviar concluso para despacho de cumprimento de sentença"/>
+        <transition to="(VCiv) Conclusão para sentença" name="15 - Enviar concluso para sentença">
             <condition expression="#{! (parametroUtil.getParametro('pje:tjrn:classesVEF').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_')) &amp;&amp; parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:espec:ids').contains(' '.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat(' ')) ) }"/>
         </transition>
-        <transition to="(VCiv) Encaminhar gabinete - sentença" name="18 - Enviar concluso para sentença - Execução Fiscal">
+        <transition to="(VCiv) Encaminhar gabinete - sentença" name="15 - Enviar concluso para sentença - Execução Fiscal">
             <condition expression="#{ parametroUtil.getParametro('pje:tjrn:classesVEF').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().classeJudicial.codClasseJudicial).concat('_')) &amp;&amp; parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:espec:ids').contains(' '.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat(' ')) }"/>
         </transition>
-        <transition to="(VCiv) Conclusão para sentença de homologação e(ou) extinção" name="19 - Enviar concluso para sentença de homologação e/ou extinção"/>
-        <transition to="(VCiv) Dar cumprimento a ato judicial de central de calculos" name="20 - Enviar à Contadoria Judicial - COJUD"/>
-        <transition to="(VCiv) Penhora eletrônica - Poti" name="21 - Enviar à Penhora eletrônica - Poti"/>
-        <transition to=" (VCiv) Encaminhar para novo fluxo de Execução Fiscal" name="22 - Encaminhar para novo fluxo de Execução Fiscal">
+        <transition to="(VCiv) Conclusão para sentença de homologação e(ou) extinção" name="16 - Enviar concluso para sentença de homologação e/ou extinção"/>
+        <transition to="(VCiv) Dar cumprimento a ato judicial de central de calculos" name="17 - Enviar à Contadoria Judicial - COJUD"/>
+        <transition to="(VCiv) Penhora eletrônica - Poti" name="18 - Enviar à Penhora eletrônica - Poti"/>
+        <transition to=" (VCiv) Encaminhar para novo fluxo de Execução Fiscal" name="19 - Encaminhar para novo fluxo de Execução Fiscal">
             <condition expression="#{(parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:ids').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat('_'))) &amp;&amp; processoTrfHome.possuiClasse(23)}"/>
         </transition>
-        <transition to="(VCiv) Conclusão para decisão de urgência inicial" name="23 - Enviar concluso para decisão de urgência inicial"/>
-        <transition to="(VCiv) Conclusão para despacho inicial" name="24 - Enviar concluso para despacho inicial">
+        <transition to="(VCiv) Conclusão para decisão de urgência inicial" name="07 - Enviar concluso para decisão de urgência inicial"/>
+        <transition to="(VCiv) Conclusão para despacho inicial" name="15 - Enviar concluso para despacho inicial">
             <condition expression="#{!(parametroUtil.getParametro('pje:tjrn:OJsJuizados').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat('_')))}"/>
         </transition>
-        <transition to="(VCiv) Dar cumprimento a ato judicial de penhora online" name="25 - Dar cumprimento a ato judicial de penhora online"/>
-        <transition to="(VCiv) Citar com um clique" name="26 - Citar com um clique"/>
+        <transition to="(VCiv) Dar cumprimento a ato judicial de penhora online" name="20 - Dar cumprimento a ato judicial de penhora online"/>
+        <transition to="(VCiv) Citar com um clique" name="21 - Citar com um clique"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
+        </event>
         <event type="task-start">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_aguardar_laudo_tecnico')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_aguardar_audiencia')}"/>
@@ -210,7 +214,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_controlar_retorno_expediente')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara')}"/>
@@ -252,7 +255,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_decurso', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_transito', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:citar_intimar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar'))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:edital', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_edital'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:controlar_audiencia', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvara', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvaras', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvaras'))}"/>
@@ -274,12 +276,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:encaminar_cejusc',tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_encaminhar_cejusc'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:encerrar_prazo',tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_encerrar_prazo'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:registrar_serasajud', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_registrar_serasajud'))}"/>
-        </event>
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('condicaoLancamentoMovimentosTemporario')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('MovimentosLancadosTemporariamente')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
         </event>
     </task-node>
     <node name=" (VCiv) Encaminhar para novo fluxo de Execução Fiscal">
@@ -704,7 +700,6 @@ Código: VCiv_FBC]]></description>
                 <variable name="vciv_fbc_certificar_decurso" mapped-name="sim_nao:vciv_fbc_certificar_decurso" access="read,write"/>
                 <variable name="vciv_fbc_certificar_transito" mapped-name="sim_nao:vciv_fbc_certificar_transito" access="read,write"/>
                 <variable name="vciv_fbc_citar_intimar" mapped-name="sim_nao:vciv_fbc_citar_intimar" access="read,write"/>
-                <variable name="vciv_fbc_edital" mapped-name="sim_nao:vciv_fbc_edital" access="read,write"/>
                 <variable name="vciv_fbc_controlar_audiencia" mapped-name="sim_nao:vciv_fbc_controlar_audiencia" access="read,write"/>
                 <variable name="vciv_fbc_controlar_retorno_expediente" mapped-name="sim_nao:vciv_fbc_controlar_retorno_expediente" access="read,write"/>
                 <variable name="vciv_fbc_expedir_alvaras" mapped-name="sim_nao:vciv_fbc_expedir_alvaras" access="read,write"/>
@@ -755,7 +750,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvaras')}"/>
@@ -785,7 +779,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_decurso', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_transito', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:citar_intimar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar'))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:edital', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_edital'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:controlar_audiencia', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvara', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvaras', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvaras'))}"/>
@@ -900,7 +893,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:certificar_decurso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:certificar_transito')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:citar_intimar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:edital')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:controlar_audiencia')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_alvara')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_alvaras')}"/>
