@@ -294,6 +294,8 @@
         <transition to="(VCiv) É sentença?" name="(VCiv) É sentença?"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:paj:certidaosemefeito')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('minuta_semefeito')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('textEditSignature:minuta_semefeito')}"/>
         </event>
     </fork>
     <join name="(VCiv) Junção de atos judiciais">
