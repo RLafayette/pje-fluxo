@@ -10,7 +10,7 @@
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,7:5197,7:5886,6:1469')}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,6:1469')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,6:1469')}"/>
     </swimlane>
     <swimlane name="Nó de Desvio - (VCiv) Cumprimento de decisão">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('-1:1338,1342:1469')}"/>
@@ -361,8 +361,8 @@
         </transition>
         <transition to="(VCiv) Junção em cumprimento de decisão" name="Finalizar tarefa"/>
     </task-node>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:publicar_dje') ? '(VCiv) Publicação no DJE' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Publicar no DJE?">
-        <transition to="(VCiv) Publicação no DJE" name="(VCiv) Publicação no DJE"/>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:publicar_djen') ? '(VCiv) Publicação no DJEN' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Publicar no DJE?">
+        <transition to="(VCiv) Publicação no DJEN" name="(VCiv) Publicação no DJEN"/>
         <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
     </decision>
     <process-state name="(VCiv) Publicação no DJE">
