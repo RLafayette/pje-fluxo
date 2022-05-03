@@ -32,7 +32,7 @@ Secretaria  Secretaria Segundo Grau  Chefe de Secretaria  Secretaria Segundo Gra
                 <variable name="Processo_Fluxo_expedientes_diario" mapped-name="frame:Processo_Fluxo_expedientes_diario" access="read,write"/>
             </controller>
         </task>
-        <transition to="(SG) Publicar expediente no DJEN" name="Enviar expedientes ao DJEN"/>
+        <transition to="(SG) Publicar expedientes no DJEN" name="Enviar expedientes ao DJEN"/>
         <transition to="(SG) Publicação no DJEN - IGNORAR" name="Ignorar preparação de expedientes para o DJEN"/>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
@@ -69,11 +69,11 @@ Tipo: Aviso]]></description>
             <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
         </event>
     </task-node>
-    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Publicar expediente no DJEN' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Edital?">
-        <transition to="(SG) Publicar expediente no DJEN" name="(SG) Publicar expediente no DJEN"/>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Publicar expedientes no DJEN' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Publicar expedientes no DJEN" name="(SG) Publicar expedientes no DJEN"/>
         <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
     </decision>
-    <node name="(SG) Publicar expediente no DJEN">
+    <node name="(SG) Publicar expedientes no DJEN">
         <transition to="(SG) Publicou no DJEN?" name="(SG) Publicou no DJEN?"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntPublicadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>

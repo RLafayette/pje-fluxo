@@ -5,13 +5,13 @@
     Descrição: Fluxo destinado a publicação de expedientes no diário da justiça eletrônico.]]></description>  
     <!-- SWIMLANES -->
     <swimlane name="Magistrado">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853,6:5901')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853,6:5901')}"/>
     </swimlane>
     <swimlane name="Nó de Desvio - (VCiv) Publicação no DJEN">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:1469')}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('5:1338,5:5483,6:1469,8:5852,8:5853')}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
@@ -33,16 +33,13 @@
                 <variable name="Processo_Fluxo_expedientes_diario" mapped-name="frame:Processo_Fluxo_expedientes_diario" access="read,write"/>
             </controller>
         </task>
-        <transition to="(VCiv) Publicar expediente no DJEN" name="Enviar expedientes ao DJEN"/>
+        <transition to="(VCiv) Publicar expedientes no DJEN" name="Enviar expedientes ao DJEN"/>
         <transition to="(VCiv) Ignorar publicação no DJEN" name="Ignorar preparação de expedientes para o DJEN"/>
-        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
-            <condition expression="#{true}"/>
-        </transition>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
         </event>
         <event type="task-create">
-            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(VCiv) Ignorar publicação no DJEN">
@@ -60,21 +57,18 @@ Obrig.: Não
 Tipo: Aviso]]></description>
         <transition to="(VCiv) Separação em Edital ou Diário" name="Não"/>
         <transition to="(VCiv) Junção em Edital ou Diário" name="Sim"/>
-        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
-            <condition expression="#{true}"/>
-        </transition>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
         </event>
         <event type="task-create">
-            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
         </event>
     </task-node>
-    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(VCiv) Publicar expediente no DJEN' : '(VCiv) Junção em Edital ou Diário'}" name="(VCiv) Possui meio Edital?">
-        <transition to="(VCiv) Publicar expediente no DJEN" name="(VCiv) Publicar expediente no DJEN"/>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(VCiv) Publicar expedientes no DJEN' : '(VCiv) Junção em Edital ou Diário'}" name="(VCiv) Possui meio Edital?">
+        <transition to="(VCiv) Publicar expedientes no DJEN" name="(VCiv) Publicar expedientes no DJEN"/>
         <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
     </decision>
-    <node name="(VCiv) Publicar expediente no DJEN">
+    <node name="(VCiv) Publicar expedientes no DJEN">
         <transition to="(VCiv) Publicou no DJEN?" name="(VCiv) Publicou no DJEN?"/>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntPublicadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
@@ -89,22 +83,77 @@ Tipo: Aviso]]></description>
     </decision>
     <task-node end-tasks="true" name="(VCiv) Aguardando publicação no DJEN">
         <task name="(VCiv) Aguardando publicação no DJEN" swimlane="Secretaria" priority="3"/>
-        <transition to="Nó de Desvio - (VCiv) Publicação no DJEN" name="Nó de Desvio - (VCiv) Publicação no DJEN">
-            <condition expression="#{true}"/>
-        </transition>
         <transition to="(VCiv) Junção em Edital ou Diário" name="Prosseguir"/>
+        <transition to="(VCiv) Confirmar cancelamento de publicação no DJEN" name="Cancelar publicação"/>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:aguardaPublicacaoDJE')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:aguardaPublicacaoDJE', true)}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', 'Prosseguir')}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(VCiv) Confirmar cancelamento de publicação no DJEN">
+        <task name="(VCiv) Confirmar cancelamento de publicação no DJEN" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Aviso_DJEN_cancelamento" mapped-name="textAlert:Aviso_DJEN_cancelamento" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[Variáveis:
+
+Nome: Aviso_DJEN_cancelamento
+Label: Deseja realmente cancelar a publicação no DJEN?
+Escrita: Sim
+Obrig.: Não
+Tipo: Aviso]]></description>
+        <transition to="(VCiv) Cancelar publicação de expediente no DJEN" name="Sim"/>
+        <transition to="(VCiv) Aguardando publicação no DJEN" name="Não"/>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
+        </event>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+    </task-node>
+    <node name="(VCiv) Cancelar publicação de expediente no DJEN">
+        <transition to="(VCiv) Cancelou publicação de expedientes no DJEN?" name="(VCiv) Cancelou publicação de expedientes no DJEN?"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso', comunicacaoProcessualAction.cancelarPublicacaoDiarioExpedientesAtuais())}"/>
+        </event>
+    </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso').equals(true) ? '(VCiv) Junção em Edital ou Diário' : '(VCiv) Erro ao cancelar publicação no DJEN'}" name="(VCiv) Cancelou publicação de expedientes no DJEN?">
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
+        <transition to="(VCiv) Erro ao cancelar publicação no DJEN" name="(VCiv) Erro ao cancelar publicação no DJEN"/>
+    </decision>
+    <task-node end-tasks="true" name="(VCiv) Erro ao cancelar publicação no DJEN">
+        <task name="(VCiv) Erro ao cancelar publicação no DJEN" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Aviso_ERRO_DJEN" mapped-name="textAlert:Aviso_ERRO_DJEN" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[Variáveis:
+
+Nome: Aviso_ERRO_DJEN
+Label: Algumas publicações não foram canceladas. Recibo(s) das publicaçõe(s): #{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')}. Deseja tentar novamente?
+Escrita: Sim
+Obrig.: Não
+Tipo: Aviso]]></description>
+        <transition to="(VCiv) Confirmar cancelamento de publicação no DJEN" name="Sim"/>
+        <transition to="(VCiv) Aguardando publicação no DJEN" name="Não"/>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
+        </event>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
     </task-node>
     <join name="(VCiv) Junção em Edital ou Diário">
         <transition to="Término" name="Término"/>
     </join>
     <end-state name="Término"/>
-    <task-node end-tasks="true" name="Nó de Desvio - (VCiv) Publicação no DJEN">
-        <task name="Nó de Desvio - (VCiv) Publicação no DJEN" swimlane="Nó de Desvio - (VCiv) Publicação no DJEN" priority="3"/>
-        <transition to="Término" name="Término"/>
-        <transition to="(VCiv) Preparar expedientes para o DJEN" name="(VCiv) Preparar expedientes para o DJEN"/>
-        <transition to="(VCiv) Aguardando publicação no DJEN" name="(VCiv) Aguardando publicação no DJEN"/>
-        <transition to="(VCiv) Ignorar publicação no DJEN" name="(VCiv) Ignorar publicação no DJEN"/>
-    </task-node>  
     <!-- PROCESS-EVENTS -->
     <event type="superstate-enter">
         <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>

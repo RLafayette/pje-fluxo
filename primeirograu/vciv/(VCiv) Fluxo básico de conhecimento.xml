@@ -127,7 +127,7 @@ Código: VCiv_FBC]]></description>
                 <variable name="vciv_fbc_certificar_decurso" mapped-name="sim_nao:vciv_fbc_certificar_decurso" access="read,write"/>
                 <variable name="vciv_fbc_certificar_transito" mapped-name="sim_nao:vciv_fbc_certificar_transito" access="read,write"/>
                 <variable name="vciv_fbc_citar_intimar" mapped-name="sim_nao:vciv_fbc_citar_intimar" access="read,write"/>
-                <variable name="vciv_fbc_edital" mapped-name="sim_nao:vciv_fbc_edital" access="read,write"/>
+                <variable name="vciv_fbc_publicar_djen" mapped-name="sim_nao:vciv_fbc_publicar_djen" access="read,write"/>
                 <variable name="vciv_fbc_controlar_audiencia" mapped-name="sim_nao:vciv_fbc_controlar_audiencia" access="read,write"/>
                 <variable name="vciv_fbc_controlar_retorno_expediente" mapped-name="sim_nao:vciv_fbc_controlar_retorno_expediente" access="read,write"/>
                 <variable name="vciv_fbc_encaminhar_cejusc" mapped-name="sim_nao:vciv_fbc_encaminhar_cejusc" access="read,write"/>
@@ -143,7 +143,6 @@ Código: VCiv_FBC]]></description>
                 <variable name="vciv_fbc_registrar_serasajud" mapped-name="sim_nao:vciv_fbc_registrar_serasajud" access="read,write"/>
                 <variable name="vciv_fbc_infojud_infoseg_consultar" mapped-name="sim_nao:vciv_fbc_infojud_infoseg_consultar" access="read,write"/>
                 <variable name="vciv_fbc_intimar_mp" mapped-name="sim_nao:vciv_fbc_intimar_mp" access="read,write"/>
-                <variable name="vciv_fbc_publicar_dje" mapped-name="sim_nao:vciv_fbc_publicar_dje" access="read,write"/>
                 <variable name="vciv_fbc_renajud_consultar" mapped-name="sim_nao:vciv_fbc_renajud_consultar" access="read,write"/>
                 <variable name="vciv_fbc_retificar_autuacao" mapped-name="sim_nao:vciv_fbc_retificar_autuacao" access="read,write"/>
                 <variable name="vciv_fbc_suspender" mapped-name="sim_nao:vciv_fbc_suspender" access="read,write"/>
@@ -210,7 +209,7 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_edital')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_publicar_djen')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_controlar_retorno_expediente')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara')}"/>
@@ -220,7 +219,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_oficio')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_outros_documentos')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_infojud_infoseg_consultar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_publicar_dje')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_renajud_consultar')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_retificar_autuacao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_suspender')}"/>
@@ -252,7 +250,7 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_decurso', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_transito', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:citar_intimar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar'))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:edital', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_edital'))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:publicar_djen', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_publicar_djen'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:controlar_audiencia', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvara', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvaras', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvaras'))}"/>
@@ -261,7 +259,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_oficio', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_oficio'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_outros_documentos', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_outros_documentos'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:infojud_infoseg_consultar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_infojud_infoseg_consultar'))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:publicar_dje', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_publicar_dje'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:renajud_consultar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_renajud_consultar'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:retificar_autuacao', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_retificar_autuacao'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:suspender', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_suspender'))}"/>
@@ -704,7 +701,7 @@ Código: VCiv_FBC]]></description>
                 <variable name="vciv_fbc_certificar_decurso" mapped-name="sim_nao:vciv_fbc_certificar_decurso" access="read,write"/>
                 <variable name="vciv_fbc_certificar_transito" mapped-name="sim_nao:vciv_fbc_certificar_transito" access="read,write"/>
                 <variable name="vciv_fbc_citar_intimar" mapped-name="sim_nao:vciv_fbc_citar_intimar" access="read,write"/>
-                <variable name="vciv_fbc_edital" mapped-name="sim_nao:vciv_fbc_edital" access="read,write"/>
+                <variable name="vciv_fbc_publicar_djen" mapped-name="sim_nao:vciv_fbc_publicar_djen" access="read,write"/>
                 <variable name="vciv_fbc_controlar_audiencia" mapped-name="sim_nao:vciv_fbc_controlar_audiencia" access="read,write"/>
                 <variable name="vciv_fbc_controlar_retorno_expediente" mapped-name="sim_nao:vciv_fbc_controlar_retorno_expediente" access="read,write"/>
                 <variable name="vciv_fbc_expedir_alvaras" mapped-name="sim_nao:vciv_fbc_expedir_alvaras" access="read,write"/>
@@ -715,7 +712,6 @@ Código: VCiv_FBC]]></description>
                 <variable name="vciv_fbc_expedir_outros_documentos" mapped-name="sim_nao:vciv_fbc_expedir_outros_documentos" access="read,write"/>
                 <variable name="vciv_fbc_infojud_infoseg_consultar" mapped-name="sim_nao:vciv_fbc_infojud_infoseg_consultar" access="read,write"/>
                 <variable name="vciv_fbc_intimar_mp" mapped-name="sim_nao:vciv_fbc_intimar_mp" access="read,write"/>
-                <variable name="vciv_fbc_publicar_dje" mapped-name="sim_nao:vciv_fbc_publicar_dje" access="read,write"/>
                 <variable name="vciv_fbc_renajud_consultar" mapped-name="sim_nao:vciv_fbc_renajud_consultar" access="read,write"/>
                 <variable name="vciv_fbc_retificar_autuacao" mapped-name="sim_nao:vciv_fbc_retificar_autuacao" access="read,write"/>
                 <variable name="vciv_fbc_suspender" mapped-name="sim_nao:vciv_fbc_suspender" access="read,write"/>
@@ -755,7 +751,8 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_edital')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_publicar_djen')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_publicar_dje')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvaras')}"/>
@@ -764,7 +761,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_oficio')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_expedir_outros_documentos')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_infojud_infoseg_consultar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_publicar_dje')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_renajud_consultar')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_retificar_autuacao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('sim_nao:vciv_fbc_suspender')}"/>
@@ -785,7 +781,7 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_decurso', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_decurso'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:certificar_transito', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_certificar_transito'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:citar_intimar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_citar_intimar'))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:edital', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_edital'))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:publicar_djen', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_publicar_djen'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:controlar_audiencia', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_controlar_audiencia'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvara', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvara'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_alvaras', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_alvaras'))}"/>
@@ -794,7 +790,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_oficio', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_oficio'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:expedir_outros_documentos', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_expedir_outros_documentos'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:infojud_infoseg_consultar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_infojud_infoseg_consultar'))}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:publicar_dje', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_publicar_dje'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:renajud_consultar', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_renajud_consultar'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:retificar_autuacao', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_retificar_autuacao'))}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:suspender', tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:vciv_fbc_suspender'))}"/>
@@ -900,7 +895,8 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:certificar_decurso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:certificar_transito')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:citar_intimar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:edital')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:publicar_djen')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:publicar_dje')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:controlar_audiencia')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_alvara')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_alvaras')}"/>
@@ -909,7 +905,6 @@ Código: VCiv_FBC]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_oficio')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_outros_documentos')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:infojud_infoseg_consultar')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:publicar_dje')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:renajud_consultar')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:retificar_autuacao')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:suspender')}"/>

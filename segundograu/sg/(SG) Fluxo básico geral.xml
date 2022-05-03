@@ -183,7 +183,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
    Tipo: Checkbox
 
 12.1. Variável: sg_fbg_intimar_citar_edital
-   Label: Intimar ou citar via edital
+   Label: Publicar ou preparar documento para o DJEN
    Escrita: Sim
    Obrig. Não
    Tipo: Checkbox
