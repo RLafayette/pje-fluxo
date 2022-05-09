@@ -536,7 +536,7 @@ Aguardar Perícia / Laudo Técnico / Outros...]]></description>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fbc:decisao_penhora_online')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fbc:decisao')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:saida_nao_sentenciado', '(VCiv) Dar cumprimento a ato judicial de penhora online')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:fbc:saida_nao_sentenciado', '(VCiv) Despachados')}"/>
         </event>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:fbc:decisao_penhora_online', 'true')}"/>
