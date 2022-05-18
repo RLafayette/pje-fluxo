@@ -554,7 +554,7 @@
     </node>
     <process-state name="(VCiv) Controlar prazos via mandado">
         <sub-process name="(VCiv) Controle de prazos e retorno de expedientes" binding="late"/>
-        <transition to="(VCiv) Apagar variáveis do fluxo" name="(VCiv) Apagar variáveis do fluxo"/>
+        <transition to="(VCiv) Junção em Preparar Ato de Comunicação" name="(VCiv) Junção em Preparar Ato de Comunicação"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cpre:mandado')}"/>
         </event>
@@ -864,7 +864,7 @@
         <transition to="Nó de Desvio - (VCiv) Preparar Ato de Comunicação" name="Nó de Desvio - (VCiv) Preparar Ato de Comunicação">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(VCiv) Apagar variáveis do fluxo" name="Cancelar e sair da tarefa"/>
+        <transition to="(VCiv) Junção em Preparar Ato de Comunicação" name="Cancelar e sair da tarefa"/>
         <transition to="(VCiv) Encaminhar para assinatura de carta rogatória?" name="Encaminhar para assinatura">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCartaRog', '(VCiv) Expedir Carta Rogatória')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCartaRog', '(VCiv) Deslocar OJ origem carta rogatoria')}"/>
