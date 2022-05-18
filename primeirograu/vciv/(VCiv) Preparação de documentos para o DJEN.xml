@@ -32,20 +32,20 @@
    Escrita: Sim
    Obrig.: Não
    Tipo: Frame]]></description>
-        <transition to="Término" name="Ignorar preparação de edital"/>
-        <transition to="(VCiv) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura do chefe de secretaria">
+        <transition to="(VCiv) Voltar para análise de secretaria" name="Ignorar preparação de documento"/>
+        <transition to="(VCiv) Encaminhar para assinatura de documento?" name="Encaminhar para assinatura do chefe de secretaria">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:AntCitInt', '(VCiv) Publicar ou preparar documento para o DJEN')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:ProxCitInt', '(VCiv) Publicar ou preparar documento para o DJEN pela secretaria')}"/>
         </transition>
-        <transition to="(VCiv) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura do magistrado">
+        <transition to="(VCiv) Encaminhar para assinatura de documento?" name="Encaminhar para assinatura do magistrado">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:AntCitInt', '(VCiv) Publicar ou preparar documento para o DJEN')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:ProxCitInt', '(VCiv) Publicar ou preparar documento para o DJEN pelo(a) magistrado(a)')}"/>
         </transition>
-        <transition to="(VCiv) Possui meio Edital?" name="(VCiv) Possui meio Edital?">
+        <transition to="(VCiv) Separação em Edital ou Diário" name="(VCiv) Separação em Edital ou Diário">
             <condition expression="#{true}"/>
         </transition>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Possui meio Edital?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
             <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
             <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
@@ -80,14 +80,11 @@
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
         </task>
-        <transition to="(VCiv) Possui meio Edital?" name="(VCiv) Possui meio Edital?">
+        <transition to="(VCiv) Separação em Edital ou Diário" name="(VCiv) Separação em Edital ou Diário">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Publicar ou preparar documento para o DJEN" name="Retornar para expedição de citação e(ou) intimação"/>
-        <transition to="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN" name="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN">
-            <condition expression="#{true}"/>
-        </transition>
-        <transition to="(VCiv) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura do magistrado">
+        <transition to="(VCiv) Encaminhar para assinatura de documento?" name="Encaminhar para assinatura do magistrado">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:AntCitInt', '(VCiv) Publicar ou preparar documento para o DJEN pela secretaria')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:ProxCitInt', '(VCiv) Publicar ou preparar documento para o DJEN pelo(a) magistrado(a)')}"/>
         </transition>
@@ -98,7 +95,7 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Possui meio Edital?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
             <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
@@ -127,11 +124,8 @@
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
         </task>
-        <transition to="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN" name="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN">
-            <condition expression="#{true}"/>
-        </transition>
         <transition to="(VCiv) Publicar ou preparar documento para o DJEN" name="Retornar para expedição de citação e (ou) intimação"/>
-        <transition to="(VCiv) Possui meio Edital?" name="(VCiv) Possui meio Edital?">
+        <transition to="(VCiv) Separação em Edital ou Diário" name="(VCiv) Separação em Edital ou Diário">
             <condition expression="#{true}"/>
         </transition>
         <event type="task-end">
@@ -140,7 +134,7 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
         </event>
         <event type="task-create">
-            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Possui meio Edital?')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
             <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
             <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
@@ -163,7 +157,7 @@
             <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
         </event>
     </task-node>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('pg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('pg:tjrn:AntCitInt') }" name="(VCiv) Encaminhar para assinatura de edital?">
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('pg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('pg:tjrn:AntCitInt') }" name="(VCiv) Encaminhar para assinatura de documento?">
         <transition to="(VCiv) Publicar ou preparar documento para o DJEN pela secretaria" name="(VCiv) Publicar ou preparar documento para o DJEN pela secretaria"/>
         <transition to="(VCiv) Publicar ou preparar documento para o DJEN" name="(VCiv) Publicar ou preparar documento para o DJEN"/>
         <transition to="(VCiv) Deslocar OJ origem citacao" name="(VCiv) Publicar ou preparar documento para o DJEN pelo(a) magistrado(a)"/>
@@ -194,13 +188,13 @@
         <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
     </decision>
     <node name="(VCiv) Lançar movimento Expedição Outros documentos - Edital">
-        <transition to="(VCiv) Publicar documento no DJEN" name="(VCiv) Publicar documento no DJEN"/>
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('D', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
     </node>
     <node name="(VCiv) Lançar movimento Expedição Outros documentos - Diário">
-        <transition to="(VCiv) Publicar documento no DJEN" name="(VCiv) Publicar documento no DJEN"/>
+        <transition to="(VCiv) Junção em Edital ou Diário" name="(VCiv) Junção em Edital ou Diário"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
@@ -218,7 +212,18 @@
     <node name="(VCiv) Publicar documento no DJEN">
         <transition to="Término" name="Término"/>
         <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cpre:voltar_fbc', true)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:pubdjen:voltar_fbc', true)}"/>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'VCiv_PUB_DJEN', processInstance.contextInstance.variables)}"/>
+        </event>
+    </node>
+    <node name="(VCiv) Voltar para análise de secretaria">
+        <transition to="Término" name="Término"/>
+        <event type="node-leave">
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'VCiv_FBC', processInstance.contextInstance.variables)}"/>
+        </event>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:encaminhar_analise_secretaria', true)}"/>
         </event>
     </node>
     <end-state name="Término"/>

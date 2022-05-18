@@ -136,8 +136,8 @@ avisoRetornar: Ao RETORNAR, esta intimação eletrônica não mais ocorrerá e o proc
             <action expression="#{atoComunicacaoService.intimarEletronicamente(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf, tramitacaoProcessualService.listProcessoParteToListpessoa(tramitacaoProcessualService.recuperaProcesso().getListaAdvogadosPoloPassivo()), (empty tramitacaoProcessualService.recuperaVariavel('prazoIntimacaoPassivo') or tramitacaoProcessualService.recuperaVariavel('prazoIntimacaoPassivo') == 0) ? 'S' : 'D', (empty tramitacaoProcessualService.recuperaVariavel('prazoIntimacaoPassivo') or tramitacaoProcessualService.recuperaVariavel('prazoIntimacaoPassivo') == 0) ? null : tramitacaoProcessualService.recuperaVariavel('prazoIntimacaoPassivo'), tramitacaoProcessualService.recuperaVariavel('pje:atoProferido'))}"/>
         </event>
     </node>
-    <process-state name="(VCiv) Preparar documentos para o DJEN">
-        <sub-process name="(VCiv) Preparação de documentos para o DJEN" binding="late"/>
+    <process-state name="(VCiv) Publicar intimação eletrônica no DJEN">
+        <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
         <transition to="(VCiv) Controle de Prazo" name="(VCiv) Controle de Prazo"/>
     </process-state>
     <process-state name="(VCiv) Informar DJe">
