@@ -100,8 +100,8 @@ Tipo: Aviso]]></description>
     <node name="(VCiv) CPRE">
         <transition to="(VCiv) Junção em Diário ou Eletrônico" name="(VCiv) Junção em Diário ou Eletrônico"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cpre:sistema', true)}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:pubdjen:voltar_fbc')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cpre:sistema', true)}"/>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'VCiv_CPRE', processInstance.contextInstance.variables)}"/>
         </event>
     </node>
@@ -167,13 +167,13 @@ Tipo: Aviso]]></description>
     <decision expression="#{not empty tramitacaoProcessualService.recuperaVariavel('vciv:pubdjen:voltar_fbc') ? 'Sim' : 'Não'}" name="(VCiv) Voltar para análise de secretaria?">
         <transition to="(VCiv) Voltar para análise de secretaria" name="Sim"/>
         <transition to="Término" name="Não"/>
-        <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:pubdjen:voltar_fbc')}"/>
-        </event>
     </decision>
     <node name="(VCiv) Voltar para análise de secretaria">
         <transition to="Término" name="Término"/>
         <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:pubdjen:voltar_fbc')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cpre:voltar_fbc')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso')}"/>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'VCiv_FBC', processInstance.contextInstance.variables)}"/>
         </event>
         <event type="node-enter">
