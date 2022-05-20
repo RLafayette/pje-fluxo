@@ -16,9 +16,74 @@
     <!-- START-STATE -->
     <start-state name="Início">
         <task name="Tarefa inicial" priority="3"/>
-        <transition to="(VCiv) Publicar ou preparar documento para o DJEN" name="(VCiv) Publicar ou preparar documento para o DJEN"/>
+        <transition to="(VCiv) Apagar variáveis de Análise da secretaria" name="(VCiv) Apagar variáveis de Análise da secretaria"/>
     </start-state>  
     <!-- NODES -->
+    <node name="(VCiv) Apagar variáveis de Análise da secretaria">
+        <transition to="(VCiv) Publicar ou preparar documento para o DJEN" name="(VCiv) Publicar ou preparar documento para o DJEN"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:aguardar_laudo_tecnico')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:aguardar_audiencia')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:apensar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:bacenjud_minutar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:calcular_custas')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:certificar_decurso')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:certificar_transito')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:citar_intimar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:publicar_dje')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:controlar_audiencia')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_alvara')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_alvaras')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_carta_precatoria')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_mandado')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_oficio')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_outros_documentos')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:infojud_infoseg_consultar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:renajud_consultar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:retificar_autuacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:suspender')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:aguardar_decurso_prazo')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:intimar_mp')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_carta_rogatoria')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:controlar_retorno_expediente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_precatorio')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:expedir_rpv')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:encaminar_cejusc')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:fbc:encerrar_prazo')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_aguardar_laudo_tecnico')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_apensar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_alterar_tipo_documento')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_calcular_custas')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_certificar_decurso')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_certificar_transito')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_citar_intimar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_controlar_audiencia')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_controlar_retorno_expediente')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_encaminhar_cejusc')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_encerrar_prazo')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_alvaras')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_carta_precatoria')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_carta_rogatoria')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_mandado')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_oficio')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_outros_documentos')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_precatorio')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_expedir_rpv')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_registrar_serasajud')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_infojud_infoseg_consultar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_intimar_mp')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_renajud_consultar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_retificar_autuacao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv_fbc_suspender')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:citar_intimar')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:publicar_dje')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:expedir_mandado')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:expedir_carta_precatoria')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:intimar_mp')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:expedir_carta_rogatoria')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:citar_intimar_reativacao')}"/>
+        </event>
+    </node>
     <task-node end-tasks="true" name="(VCiv) Publicar ou preparar documento para o DJEN">
         <task name="(VCiv) Publicar ou preparar documento para o DJEN" swimlane="Secretaria" priority="3">
             <controller>
@@ -48,26 +113,27 @@
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
             <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
             <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
         </event>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_prepararExpedienteModelo')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempDjen', org.jboss.seam.bpm.taskInstance.getId())}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="node-enter">
@@ -91,28 +157,29 @@
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_prepararExpedienteModelo')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempDjen', org.jboss.seam.bpm.taskInstance.getId())}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('pg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
         </event>
         <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
             <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
         </event>
         <event type="node-enter">
             <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
@@ -131,27 +198,28 @@
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempEdital', org.jboss.seam.bpm.taskInstance.getId())}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('Processo_Fluxo_prepararExpedienteModelo')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempDjen', org.jboss.seam.bpm.taskInstance.getId())}"/>
         </event>
         <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Separação em Edital ou Diário')}"/>
             <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
             <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,69,65,71')}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))) : ''}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempEdital')))}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
         </event>
         <event type="node-enter">
             <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
@@ -205,7 +273,7 @@
     <node name="(VCiv) Apagar variáveis do fluxo">
         <transition to="(VCiv) Publicar documento no DJEN" name="(VCiv) Publicar documento no DJEN"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('idTaskInstanceTempEdital')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('idTaskInstanceTempDjen')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:CitIntValidaParaAss')}"/>
         </event>
     </node>
@@ -220,13 +288,14 @@
     <node name="(VCiv) Voltar para análise de secretaria">
         <transition to="Término" name="Término"/>
         <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pg:tjrn:CitIntValidaParaAss')}"/>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'VCiv_FBC', processInstance.contextInstance.variables)}"/>
         </event>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:encaminhar_analise_secretaria', true)}"/>
         </event>
     </node>
-    <end-state name="Término"/>
+    <end-state name="Término" />
     <task-node end-tasks="true" name="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN">
         <task name="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN" swimlane="Nó de Desvio - (VCiv) Preparação de documentos para o DJEN" priority="3"/>
         <transition to="(VCiv) Publicar ou preparar documento para o DJEN" name="(VCiv) Publicar ou preparar documento para o DJEN"/>

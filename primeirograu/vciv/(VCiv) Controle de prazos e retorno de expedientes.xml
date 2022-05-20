@@ -425,6 +425,7 @@
     <node name="(VCiv) Voltar para análise de secretaria">
         <transition to="Término" name="Término"/>
         <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cpre:sistema')}"/>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'VCiv_FBC', processInstance.contextInstance.variables)}"/>
         </event>
         <event type="node-enter">
