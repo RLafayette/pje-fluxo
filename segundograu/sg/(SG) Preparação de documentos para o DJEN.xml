@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(SG) Preparação de documentos para o DJEN">
+    <description><![CDATA[Código do fluxo: SG_PREP_DOC_DJEN
+    Descrição: Fluxo destinado à preparação de editais.]]></description>  
+    <!-- SWIMLANES --> 
+    <swimlane name="Magistrado">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('599:1469,600:5899,600:5898,600:5197,600:5907,6:1469,5:5899,5:5898,5:5197,5:5907')}"/>
+    </swimlane>
+    <swimlane name="Nó de Desvio - (SG) Preparação de documentos para o DJEN">
+        <assignment actor-id="#{actor.id}"/>
+    </swimlane>
+    <swimlane name="Secretaria">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
+    </swimlane>  
+    <!-- START-STATE -->
+    <start-state name="Início">
+        <task name="Tarefa inicial" priority="3"/>
+        <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR"/>
+    </start-state>  
+    <!-- NODES -->
+    <task-node end-tasks="true" name="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR">
+        <task name="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[*Variáveis*
+
+1. Variável: Processo_Fluxo_prepararExpediente
+   Label: 
+   Escrita: Sim
+   Obrig.: Não
+   Tipo: Frame]]></description>
+        <transition to="Término" name="Ignorar preparação de edital"/>
+        <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura do(a) secretário(a)">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Documento [DJEN] - PUBLICAR OU PREPARAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Secretário(a) [DJEN] - ASSINAR')}"/>
+        </transition>
+        <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura pelo gabinete">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Documento [DJEN] - PUBLICAR OU PREPARAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR')}"/>
+        </transition>
+        <transition to="(SG) Separação em Edital ou Diário" name="(SG) Separação em Edital ou Diário">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-create">
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Separação em Edital ou Diário')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
+            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+        </event>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempDjen', org.jboss.seam.bpm.taskInstance.getId())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
+        </event>
+        <event type="task-start">
+            <action name="upd" expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
+            <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
+        </event>
+        <event type="node-enter">
+            <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(SG) Secretário(a) [DJEN] - ASSINAR">
+        <task name="(SG) Secretário(a) [DJEN] - ASSINAR" swimlane="Secretaria" priority="4">
+            <controller>
+                <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="(SG) Separação em Edital ou Diário" name="(SG) Separação em Edital ou Diário">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="Retornar para expedição de citação e(ou) intimação"/>
+        <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura pelo gabinete">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Secretário(a) [DJEN] - ASSINAR')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR')}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempDjen', org.jboss.seam.bpm.taskInstance.getId())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:CitIntValidaParaAss', (preparaAtoComunicacaoAction.haDestinatarios() and preparaAtoComunicacaoAction.validaAtosDeComunicacao() and not empty preparaAtoComunicacaoAction.getAssinaturas()))}"/>
+        </event>
+        <event type="task-create">
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Separação em Edital ou Diário')}"/>
+            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
+            <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+        </event>
+        <event type="node-enter">
+            <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR">
+        <task name="(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR" swimlane="Magistrado" priority="4">
+            <controller>
+                <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="Nó de Desvio - (SG) Preparação de documentos para o DJEN" name="Nó de Desvio - (SG) Preparação de documentos para o DJEN">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="Retornar para expedição de citação e (ou) intimação"/>
+        <transition to="(SG) Separação em Edital ou Diário" name="(SG) Separação em Edital ou Diário">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('idTaskInstanceTempDjen', org.jboss.seam.bpm.taskInstance.getId())}"/>
+        </event>
+        <event type="task-create">
+            <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(SG) Separação em Edital ou Diário')}"/>
+            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('P,D')}"/>
+            <action expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','60,65,69')}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:meiosComunicacoes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradorias'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaExpedientes'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaAgrupamentos'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen') ? tramitacaoProcessualService.gravaVariavel('prepararAto:mapaInstrumento'.concat(org.jboss.seam.bpm.taskInstance.getId()), tramitacaoProcessualService.recuperaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+        </event>
+        <event type="node-enter">
+            <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
+        </event>
+    </task-node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('sg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('sg:tjrn:AntCitInt') }" name="(SG) Encaminhar para assinatura de edital?">
+        <transition to="(SG) Secretário(a) [DJEN] - ASSINAR" name="(SG) Secretário(a) [DJEN] - ASSINAR"/>
+        <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR"/>
+        <transition to="(SG) Deslocar OJ origem citacao" name="(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:CitIntValidaParaAss')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:AntCitInt')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:ProxCitInt')}"/>
+        </event>
+    </decision>
+    <node name="(SG) Deslocar OJ origem citacao">
+        <transition to="(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR" name="(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:deslocamento:orgaoDestino')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:deslocamento:orgaoCargoDestino')}"/>
+            <action expression="#{tramitacaoProcessualService.deslocarFluxoParaOrgaoDiverso(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf, tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:orgaoDestino'), tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:orgaoCargoDestino'), tramitacaoProcessualService.recuperaVariavel('pje:fluxo:deslocamento:colegiadoDestino'))}"/>
+        </event>
+    </node>
+<fork name="(SG) Separação em Edital ou Diário">
+        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?"/>
+        <transition to="(SG) Possui meio Diário?" name="(SG) Possui meio Diário?"/>
+    </fork>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Lançar movimento Expedição Outros documentos - Edital' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Edital?">
+        <transition to="(SG) Lançar movimento Expedição Outros documentos - Edital" name="(SG) Lançar movimento Expedição Outros documentos - Edital"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+    </decision>
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesDiario().size() &gt; 0 ? '(SG) Lançar movimento Expedição Outros documentos - Diário' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Diário?">
+        <transition to="(SG) Lançar movimento Expedição Outros documentos - Diário" name="(SG) Lançar movimento Expedição Outros documentos - Diário"/>
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+    </decision>
+    <node name="(SG) Lançar movimento Expedição Outros documentos - Edital">
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+        <event type="node-enter">
+            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('D', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
+        </event>
+    </node>
+    <node name="(SG) Lançar movimento Expedição Outros documentos - Diário">
+        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+        <event type="node-enter">
+            <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
+        </event>
+    </node>
+    <join name="(SG) Junção em Edital ou Diário">
+        <transition to="(SG) Apagar variáveis do fluxo" name="(SG) Apagar variáveis do fluxo"/>
+    </join>
+    <node name="(SG) Apagar variáveis do fluxo">
+        <transition to="(SG) Publicar documento no DJEN" name="(SG) Publicar documento no DJEN"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('idTaskInstanceTempDjen')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:tjrn:CitIntValidaParaAss')}"/>
+        </event>
+    </node>
+    <node name="(SG) Publicar documento no DJEN">
+        <transition to="Término" name="Término"/>
+        <event type="node-enter">
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PUB_DJEN', processInstance.contextInstance.variables)}"/>
+        </event>
+    </node>
+    <end-state name="Término"/>
+    <task-node end-tasks="true" name="Nó de Desvio - (SG) Preparação de documentos para o DJEN">
+        <task name="Nó de Desvio - (SG) Preparação de documentos para o DJEN" swimlane="Nó de Desvio - (SG) Preparação de documentos para o DJEN" priority="3"/>
+        <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR"/>
+        <transition to="Término" name="Término"/>
+        <transition to="Nó de Desvio - (SG) Preparação de documentos para o DJEN" name="Nó de Desvio - (SG) Preparação de documentos para o DJEN"/>
+    </task-node>  
+    <!-- PROCESS-EVENTS -->
+    <event type="superstate-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="before-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-create">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-created">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-assign">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="transition">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="after-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="timer">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="superstate-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>  
+    <!-- ACTIONS --> 
+</process-definition>
