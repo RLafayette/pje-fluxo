@@ -10,21 +10,21 @@ Secretaria  Secretaria Segundo Grau  Chefe de Secretaria  Secretaria Segundo Gra
         <assignment actor-id="#{actor.id}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
         <task name="Tarefa inicial" priority="3"/>
-        <transition to="(SG) Separação em Edital ou Diário" name="(SG) Separação em Edital ou Diário"/>
+        <transition to="(SG) Separação em Diário ou Eletrônico" name="(SG) Separação em Diário ou Eletrônico"/>
     </start-state>  
     <!-- NODES -->
-    <fork name="(SG) Separação em Edital ou Diário">
-        <transition to="(SG) Possui meio Diário?" name="(SG) Possui meio Diário?"/>
-        <transition to="(SG) Possui meio Edital?" name="(SG) Possui meio Edital?"/>
+    <fork name="(SG) Separação em Diário ou Eletrônico">
+        <transition to="(SG) Possui meio Eletrônico?" name="(SG) Possui meio Eletrônico?"/>
+        <transition to="(SG) Possui meio Diário ou Edital?" name="(SG) Possui meio Diário ou Edital?"/>
     </fork>
-    <decision expression="#{comunicacaoProcessualAction.getExpedientesEletronico().size() &gt; 0 ? '(SG) Diário da Justiça Eletrônico Nacional - PREPARAR' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Diário?">
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEletronico().size() &gt; 0 ? '(SG) Diário da Justiça Eletrônico Nacional - PREPARAR' : '(SG) Junção em Diário ou Eletrônico'}" name="(SG) Possui meio Eletrônico?">
         <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR"/>
-        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+        <transition to="(SG) Junção em Diário ou Eletrônico" name="(SG) Junção em Diário ou Eletrônico"/>
     </decision>
     <task-node end-tasks="true" name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR">
         <task name="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" swimlane="Secretaria" priority="3">
@@ -33,7 +33,7 @@ Secretaria  Secretaria Segundo Grau  Chefe de Secretaria  Secretaria Segundo Gra
             </controller>
         </task>
         <transition to="(SG) Publicar expedientes no DJEN" name="Enviar expedientes ao DJEN"/>
-        <transition to="(SG) Publicação no DJEN - IGNORAR" name="Ignorar preparação de expedientes para o DJEN"/>
+        <transition to="(SG) Publicação no DJEN - IGNORAR" name="Ignorar envio de documentos para o DJEN"/>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
         </transition>
@@ -58,7 +58,7 @@ Escrita: Sim
 Obrig.: Não
 Tipo: Aviso]]></description>
         <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="Não"/>
-        <transition to="(SG) Junção em Edital ou Diário" name="Sim"/>
+        <transition to="(SG) Junção em Diário ou Eletrônico" name="Sim"/>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
         </transition>
@@ -69,9 +69,9 @@ Tipo: Aviso]]></description>
             <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
         </event>
     </task-node>
-    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 ? '(SG) Publicar expedientes no DJEN' : '(SG) Junção em Edital ou Diário'}" name="(SG) Possui meio Edital?">
+    <decision expression="#{comunicacaoProcessualAction.getExpedientesEdital().size() &gt; 0 || comunicacaoProcessualAction.getExpedientesDiario().size() &gt; 0 ? '(SG) Publicar expedientes no DJEN' : '(SG) Junção em Diário ou Eletrônico'}" name="(SG) Possui meio Diário ou Edital?">
         <transition to="(SG) Publicar expedientes no DJEN" name="(SG) Publicar expedientes no DJEN"/>
-        <transition to="(SG) Junção em Edital ou Diário" name="(SG) Junção em Edital ou Diário"/>
+        <transition to="(SG) Junção em Diário ou Eletrônico" name="(SG) Junção em Diário ou Eletrônico"/>
     </decision>
     <node name="(SG) Publicar expedientes no DJEN">
         <transition to="(SG) Publicou no DJEN?" name="(SG) Publicou no DJEN?"/>
@@ -91,11 +91,85 @@ Tipo: Aviso]]></description>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(SG) Junção em Edital ou Diário" name="Prosseguir"/>
+        <transition to="(SG) CONTPRAZOS" name="Prosseguir">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Junção em Diário ou Eletrônico" name="Sair da tarefa"/>
+        <transition to="(SG) Cancelamento de disponibilização no DJEN - CONFIRMAR" name="Cancelar envio de documento para o DJEN"/>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:aguardaPublicacaoDJE')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:aguardaPublicacaoDJE', true)}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', 'Prosseguir')}"/>
+        </event>
     </task-node>
-    <join name="(SG) Junção em Edital ou Diário">
+    <join name="(SG) Junção em Diário ou Eletrônico">
         <transition to="Término" name="Término"/>
     </join>
+    <node name="(SG) CONTPRAZOS">
+        <transition to="(SG) Junção em Diário ou Eletrônico" name="(SG) Junção em Diário ou Eletrônico"/>
+        <event type="node-enter">
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_CONTPRAZOS', processInstance.contextInstance.variables)}"/>
+        </event>
+    </node>
+    <task-node end-tasks="true" name="(SG) Cancelamento de disponibilização no DJEN - CONFIRMAR">
+        <task name="(SG) Cancelamento de disponibilização no DJEN - CONFIRMAR" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Aviso_DJEN_cancelamento" mapped-name="textAlert:Aviso_DJEN_cancelamento" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[Variáveis:
+
+Nome: Aviso_DJEN_cancelamento
+Label: Deseja realmente cancelar a disponibilização no DJEN?
+Escrita: Sim
+Obrig.: Não
+Tipo: Aviso]]></description>
+        <transition to="(SG) Cancelar disponibilização de expediente no DJEN" name="Sim"/>
+        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="Não"/>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
+        </event>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+    </task-node>
+    <node name="(SG) Cancelar disponibilização de expediente no DJEN">
+        <transition to="(SG) Cancelou disponibilização de expedientes no DJEN?" name="(SG) Cancelou disponibilização de expedientes no DJEN?"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso', comunicacaoProcessualAction.cancelarPublicacaoDiarioExpedientesAtuais())}"/>
+        </event>
+    </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso').equals(true) ? '(SG) Junção em Diário ou Eletrônico' : '(SG) Cancelamento de disponibilização no DJEN - ERRO'}" name="(SG) Cancelou disponibilização de expedientes no DJEN?">
+        <transition to="(SG) Junção em Diário ou Eletrônico" name="(SG) Junção em Diário ou Eletrônico"/>
+        <transition to="(SG) Cancelamento de disponibilização no DJEN - ERRO" name="(SG) Cancelamento de disponibilização no DJEN - ERRO"/>
+    </decision>
+    <task-node end-tasks="true" name="(SG) Cancelamento de disponibilização no DJEN - ERRO">
+        <task name="(SG) Cancelamento de disponibilização no DJEN - ERRO" swimlane="Secretaria" priority="3">
+            <controller>
+                <variable name="Aviso_ERRO_DJEN" mapped-name="textAlert:Aviso_ERRO_DJEN" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[Variáveis:
+
+Nome: Aviso_ERRO_DJEN
+Label: Algumas publicações não foram canceladas. Recibo(s) das publicaçõe(s): #{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')}. Deseja tentar novamente?
+Escrita: Sim
+Obrig.: Não
+Tipo: Aviso]]></description>
+        <transition to="(SG) Cancelamento de disponibilização no DJEN - CONFIRMAR" name="Sim"/>
+        <transition to="(SG) Publicação no DJEN - AGUARDAR" name="Não"/>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('mostrarBotaoGravarNoFluxo', false)}"/>
+        </event>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:djen:publicacaoCanceladaSucesso')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
+        </event>
+    </task-node>
     <end-state name="Término"/>
     <task-node end-tasks="true" name="Nó de Desvio - (SG) Publicação no DJEN">
         <task name="Nó de Desvio - (SG) Publicação no DJEN" swimlane="Nó de Desvio - (SG) Publicação no DJEN" priority="3"/>

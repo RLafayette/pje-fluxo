@@ -13,7 +13,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
         <assignment actor-id="#{actor.id}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
@@ -261,6 +261,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
         <transition to="(SG) Conclusão para despacho da presidência" name="19 - Conclusão para despacho da presidência"/>
         <transition to="(SG) Enviar para a Turma de Uniformização de Jurisprudência" name="20 - Enviar para a Turma de Uniformização de Jurisprudência"/>
         <transition to="(SG) Gravar variavel fluxo unico - Encaminhar para análise de prevenção" name="21 - Encaminhar para análise de prevenção"/>
+        <transition to="(SG) Preparar para o DJEN" name="22 - Publicar ou preparar documento para o DJEN"/>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', '')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat(tramitacaoProcessualService.recuperaVariavelTarefa('sim_nao:sg_fbg_apensar_desapensar') == true ? '{sg_fbg_apensar_desapensar}' : ''))}"/>
@@ -957,7 +958,23 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>
     <process-state name="(SG) Processos devolvidos da TUJ">
         <sub-process name="(SG) Processos devolvidos pela TUJ" binding="late"/>
         <transition to="(SG) Secretaria - ANALISAR" name="(SG) Secretaria - ANALISAR"/>
-    </process-state>  
+    </process-state>
+    <node name="(VCiv) Preparar para o DJEN">
+        <transition to="(SG) Encaminhar para aguardar cumprimentos?" name="(SG) Encaminhar para aguardar cumprimentos?"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:fbg:opcoesCumprimento', tramitacaoProcessualService.recuperaVariavel('sg:fbg:opcoesCumprimento').concat('{sg_fbg_publicar_dje}')}"/>
+            <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PREP_DOC_DJEN', processInstance.contextInstance.variables)}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:meiosComunicacoes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradorias'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaProcuradoriaSelecionada'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaIntimacaoPessoal'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaUmExpedientePorEndereco'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaInstrumento'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaExpedientes'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('prepararAto:mapaAgrupamentos'.concat(tramitacaoProcessualService.recuperaVariavel('idTaskInstanceTempDjen')))}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('idTaskInstanceTempDjen')}"/>
+        </event>
+    </node>
     <!-- PROCESS-EVENTS -->
     <event type="superstate-enter">
         <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
