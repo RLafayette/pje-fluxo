@@ -57,7 +57,7 @@ Label: Deseja realmente ignorar a publicação no DJEN?
 Escrita: Sim
 Obrig.: Não
 Tipo: Aviso]]></description>
-        <transition to="(SG) Diário da Justiça Eletrônico Nacional - PREPARAR" name="Não"/>
+        <transition to="(SG) Separação em Diário ou Eletrônico" name="Não"/>
         <transition to="(SG) Junção em Diário ou Eletrônico" name="Sim"/>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
@@ -76,14 +76,14 @@ Tipo: Aviso]]></description>
     <node name="(SG) Publicar expedientes no DJEN">
         <transition to="(SG) Publicou no DJEN?" name="(SG) Publicou no DJEN?"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntPublicadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntEnviadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
         </event>
     </node>
-    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:DefinicaoPublicouDJEN')) ? '(SG) Publicação no DJEN - AGUARDAR' : '(SG) Publicação no DJEN - IGNORAR'}" name="(SG) Publicou no DJEN?">
+    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:DefinicaoEnviouDJEN')) ? '(SG) Publicação no DJEN - AGUARDAR' : '(SG) Publicação no DJEN - IGNORAR'}" name="(SG) Publicou no DJEN?">
         <transition to="(SG) Publicação no DJEN - AGUARDAR" name="(SG) Publicação no DJEN - AGUARDAR"/>
         <transition to="(SG) Publicação no DJEN - IGNORAR" name="(SG) Publicação no DJEN - IGNORAR"/>
         <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:tjrn:qntPublicadosDjen')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:tjrn:qntEnviadosDjen')}"/>
         </event>
     </decision>
     <task-node end-tasks="true" name="(SG) Publicação no DJEN - AGUARDAR">
@@ -155,7 +155,7 @@ Tipo: Aviso]]></description>
         <description><![CDATA[Variáveis:
 
 Nome: Aviso_ERRO_DJEN
-Label: Algumas publicações não foram canceladas. Recibo(s) das publicaçõe(s): #{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')}. Deseja tentar novamente?
+Label: Ocorreu um erro ao tentar cancelar o envio. #{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')} Deseja tentar novamente?
 Escrita: Sim
 Obrig.: Não
 Tipo: Aviso]]></description>
