@@ -32,12 +32,12 @@
    Escrita: Sim
    Obrig.: Não
    Tipo: Frame]]></description>
-        <transition to="Término" name="Ignorar preparação de edital"/>
-        <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura do(a) secretário(a)">
+        <transition to="Término" name="Ignorar preparação de documento"/>
+        <transition to="(SG) Encaminhar para assinatura de documento?" name="Encaminhar para assinatura do(a) secretário(a)">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Documento [DJEN] - PUBLICAR OU PREPARAR')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Secretário(a) [DJEN] - ASSINAR')}"/>
         </transition>
-        <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura pelo gabinete">
+        <transition to="(SG) Encaminhar para assinatura de documento?" name="Encaminhar para assinatura pelo gabinete">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Documento [DJEN] - PUBLICAR OU PREPARAR')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR')}"/>
         </transition>
@@ -88,7 +88,7 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="Retornar para expedição de citação e(ou) intimação"/>
-        <transition to="(SG) Encaminhar para assinatura de edital?" name="Encaminhar para assinatura pelo gabinete">
+        <transition to="(SG) Encaminhar para assinatura de documento?" name="Encaminhar para assinatura pelo gabinete">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:AntCitInt', '(SG) Secretário(a) [DJEN] - ASSINAR')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:tjrn:ProxCitInt', '(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR')}"/>
         </transition>
@@ -164,7 +164,7 @@
             <action name="upd" expression="#{modeloDocumento.set('Processo_Fluxo_prepararExpediente',80)}"/>
         </event>
     </task-node>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('sg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('sg:tjrn:AntCitInt') }" name="(SG) Encaminhar para assinatura de edital?">
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('sg:tjrn:CitIntValidaParaAss') == true ? tramitacaoProcessualService.recuperaVariavel('sg:tjrn:ProxCitInt') : tramitacaoProcessualService.recuperaVariavel('sg:tjrn:AntCitInt') }" name="(SG) Encaminhar para assinatura de documento?">
         <transition to="(SG) Secretário(a) [DJEN] - ASSINAR" name="(SG) Secretário(a) [DJEN] - ASSINAR"/>
         <transition to="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR" name="(SG) Documento [DJEN] - PUBLICAR OU PREPARAR"/>
         <transition to="(SG) Deslocar OJ origem citacao" name="(SG) Documento pendente de assinatura pelo gabinete [DJEN] - ASSINAR"/>

@@ -71,14 +71,14 @@ Tipo: Aviso]]></description>
     <node name="(VCiv) Disponibilizar expedientes no DJEN">
         <transition to="(VCiv) Disponibilizou no DJEN?" name="(VCiv) Disponibilizou no DJEN?"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntDisponibilizacaoDjen', comunicacaoProcessualAction.enviarExpedientesDJE())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntEnviadosDjen', comunicacaoProcessualAction.enviarExpedientesDJE())}"/>
         </event>
     </node>
-    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:DefinicaoDisponibilizouDJEN')) ? '(VCiv) Aguardando publicação no DJEN' : '(VCiv) Ignorar disponibilização no DJEN'}" name="(VCiv) Disponibilizou no DJEN?">
+    <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:DefinicaoEnviouDJEN')) ? '(VCiv) Aguardando publicação no DJEN' : '(VCiv) Ignorar disponibilização no DJEN'}" name="(VCiv) Disponibilizou no DJEN?">
         <transition to="(VCiv) Aguardando publicação no DJEN" name="(VCiv) Aguardando publicação no DJEN"/>
         <transition to="(VCiv) Ignorar disponibilização no DJEN" name="(VCiv) Ignorar disponibilização no DJEN"/>
         <event type="node-leave">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:tjrn:qntDisponibilizacaoDjen')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:tjrn:qntEnviadosDjen')}"/>
         </event>
     </decision>
     <task-node end-tasks="true" name="(VCiv) Aguardando publicação no DJEN">
@@ -146,7 +146,7 @@ Tipo: Aviso]]></description>
         <description><![CDATA[Variáveis:
 
 Nome: Aviso_ERRO_DJEN
-Label: Algumas publicações não foram canceladas. Recibo(s) das publicaçõe(s): #{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')}. Deseja tentar novamente?
+Label: Ocorreu um erro ao tentar cancelar o envio. #{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:djen:recibosPublicacoesNaoCanceladas')} Deseja tentar novamente?
 Escrita: Sim
 Obrig.: Não
 Tipo: Aviso]]></description>
