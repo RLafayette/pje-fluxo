@@ -76,7 +76,7 @@ Tipo: Aviso]]></description>
     <node name="(SG) Publicar expedientes no DJEN">
         <transition to="(SG) Publicou no DJEN?" name="(SG) Publicou no DJEN?"/>
         <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntEnviadosDjen', comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('P', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(1061).associarAoProcesso(processoExpedienteAtual.getProcessoTrf().getProcesso()).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.getDataAtual(&quot;dd/MM/yyyy&quot;)).lancarMovimento()}'))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:tjrn:qntEnviadosDjen', comunicacaoProcessualAction.enviarExpedientesDJE())}"/>
         </event>
     </node>
     <decision expression="#{util.eval(parametroUtil.getParametro('pje:tjrn:DefinicaoEnviouDJEN')) ? '(SG) Publicação no DJEN - AGUARDAR' : '(SG) Publicação no DJEN - IGNORAR'}" name="(SG) Publicou no DJEN?">
@@ -91,7 +91,7 @@ Tipo: Aviso]]></description>
         <transition to="Nó de Desvio - (SG) Publicação no DJEN" name="Nó de Desvio - (SG) Publicação no DJEN">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(SG) CONTPRAZOS" name="Prosseguir">
+        <transition to="(SG) Abrir CONTPRAZOS?" name="Prosseguir">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(SG) Junção em Diário ou Eletrônico" name="Sair da tarefa"/>
@@ -105,9 +105,13 @@ Tipo: Aviso]]></description>
             <action name="upd" expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', 'Prosseguir')}"/>
         </event>
     </task-node>
-    <join name="(SG) Junção em Diário ou Eletrônico">
-        <transition to="Término" name="Término"/>
-    </join>
+    <decision expression="#{not empty tramitacaoProcessualService.recuperaVariavel('sg:pubdjen:contprazos') ? 'Sim' : 'Não'}" name="(SG) Abrir CONTPRAZOS?">
+        <transition to="(SG) CONTPRAZOS" name="Sim"/>
+        <transition to="Término" name="Não"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:pubdjen:contprazos')}"/>
+        </event>
+    </decision>
     <node name="(SG) CONTPRAZOS">
         <transition to="(SG) Junção em Diário ou Eletrônico" name="(SG) Junção em Diário ou Eletrônico"/>
         <event type="node-enter">
@@ -170,6 +174,9 @@ Tipo: Aviso]]></description>
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('mostrarBotaoGravarNoFluxo')}"/>
         </event>
     </task-node>
+    <join name="(SG) Junção em Diário ou Eletrônico">
+        <transition to="Término" name="Término"/>
+    </join>
     <end-state name="Término"/>
     <task-node end-tasks="true" name="Nó de Desvio - (SG) Publicação no DJEN">
         <task name="Nó de Desvio - (SG) Publicação no DJEN" swimlane="Nó de Desvio - (SG) Publicação no DJEN" priority="3"/>
