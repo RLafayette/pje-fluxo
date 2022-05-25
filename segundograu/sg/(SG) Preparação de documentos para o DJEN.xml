@@ -219,6 +219,7 @@
     <node name="(SG) Publicar documento no DJEN">
         <transition to="Término" name="Término"/>
         <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:pubdjen:contprazos', true)}"/>
             <action expression="#{processoJudicialService.incluirNovoFluxo(tramitacaoProcessualService.recuperaProcesso(), 'SG_PUB_DJEN', processInstance.contextInstance.variables)}"/>
         </event>
     </node>

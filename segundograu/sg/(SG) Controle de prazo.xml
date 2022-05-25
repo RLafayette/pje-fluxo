@@ -6,14 +6,18 @@
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,1342:1469,8:1338,1342:1469')}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5906,8:1338,8:5906')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5906,8:1338,8:5906')}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
         <task name="Tarefa inicial" swimlane="Secretaria"/>
-        <transition to="(SG) Existe expediente com prazo em aberto?" name="(SG) Existe expediente com prazo em aberto?"/>
+        <transition to="(SG) Existe intimação ou citação via DJEN?" name="(SG) Existe intimação ou citação via DJEN?"/>
     </start-state>  
     <!-- NODES -->
+    <decision expression="#{entityManager.createQuery(&quot;SELECT COUNT(*) FROM ProcessoParteExpediente AS ppe JOIN ppe.processoExpediente AS pe WHERE ppe.processoJudicial.idProcessoTrf = :idProcessoTrf AND ppe.pessoaParte.idPessoa != 4266 AND pe.tipoProcessoDocumento.idTipoProcessoDocumento != 34 AND pe.meioExpedicaoExpediente IN ('E', 'P', 'D') AND ppe.publicacaoDiarioEletronicoList.situacao = 'P' AND ppe.fechado = false&quot;).setParameter(&quot;idProcessoTrf&quot;, tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).getSingleResult() &gt; 0 ? '(SG) Prazo - AGUARDAR' : '(SG) Existe expediente com prazo em aberto?'}" name="(SG) Existe intimação ou citação via DJEN?">
+        <transition to="(SG) Prazo - AGUARDAR" name="(SG) Prazo - AGUARDAR"/>
+        <transition to="(SG) Existe expediente com prazo em aberto?" name="(SG) Existe expediente com prazo em aberto?"/>
+    </decision>
     <decision expression="#{entityManager.createQuery(&quot;SELECT COUNT(*) FROM ProcessoParteExpediente AS ppe JOIN ppe.processoExpediente AS pe WHERE ppe.processoJudicial.idProcessoTrf = :idProcessoTrf AND ppe.pessoaParte.idPessoa != 4266 AND ppe.dtCienciaParte IS NULL AND ppe.fechado = false&quot;).setParameter(&quot;idProcessoTrf&quot;, tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).getSingleResult() &gt; 0 ? '(SG) Já existe registro do processo na tarefa?' : (entityManager.createQuery(&quot;SELECT COUNT(*) FROM ProcessoParteExpediente AS ppe JOIN ppe.processoExpediente AS pe WHERE ppe.processoJudicial.idProcessoTrf = :idProcessoTrf AND ppe.pessoaParte.idPessoa != 4266 AND ppe.tipoPrazo != 'S' AND ppe.fechado = false&quot;).setParameter(&quot;idProcessoTrf&quot;, tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).getSingleResult() &gt; 0 ? '(SG) Já existe registro do processo na tarefa?' : '(SG) Verificar pendência de cumprimentos')}" name="(SG) Existe expediente com prazo em aberto?">
         <transition to="(SG) Já existe registro do processo na tarefa?" name="(SG) Já existe registro do processo na tarefa?"/>
         <transition to="(SG) Verificar pendência de cumprimentos" name="(SG) Verificar pendência de cumprimentos"/>
