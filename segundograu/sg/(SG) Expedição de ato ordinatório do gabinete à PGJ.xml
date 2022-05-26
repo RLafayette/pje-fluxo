@@ -85,7 +85,7 @@ Assessoria Segundo Grau  Assessor Geral]]></description>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(SG) Ato ordinatório do gabinete à PGJ - ASSINAR">
-        <task name="(SG) Ato ordinatório do gabinete à PGJ - ASSINAR" swimlane="Assessoria">
+        <task name="(SG) Ato ordinatório do gabinete à PGJ - ASSINAR" swimlane="Assessoria" priority="4">
             <controller>
                 <variable name="Processo_Fluxo_revisarMinuta" mapped-name="frame:Processo_Fluxo_revisarMinuta" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
