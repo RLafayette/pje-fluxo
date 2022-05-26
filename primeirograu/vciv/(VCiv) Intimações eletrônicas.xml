@@ -139,6 +139,9 @@ avisoRetornar: Ao RETORNAR, esta intimação eletrônica não mais ocorrerá e o proc
     <process-state name="(VCiv) Publicar intimação eletrônica no DJEN">
         <sub-process name="(VCiv) Publicação no DJEN" binding="late"/>
         <transition to="(VCiv) Controle de Prazo" name="(VCiv) Controle de Prazo"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('comunicacaoProcessualAction:idsExpedientes', entityManager.createNativeQuery(&quot;select string_agg(cast(tpe.id_processo_expediente as text), ',') from (select distinct tpe.id_processo_expediente from tb_processo_expediente tpe join tb_proc_parte_expediente tppe on tppe.id_processo_expediente = tpe.id_processo_expediente where tpe.in_meio_expedicao_expediente = 'E' and tppe.in_fechado = false and tpe.id_tipo_processo_documento = 62 and tpe.id_processo_trf = &quot;.concat(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).concat(&quot;) as tpe&quot;)).getSingleResult().toString())}"/>
+        </event>
     </process-state>
     <process-state name="(VCiv) Informar DJe">
         <sub-process name="(VCiv) Publicações no DJe" binding="late"/>
