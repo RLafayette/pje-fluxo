@@ -17,7 +17,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
-        <task name="Tarefa inicial" swimlane="Secretaria"/>
+        <task name="Tarefa inicial" swimlane="Secretaria" priority="3"/>
         <transition to="(SG) Separação em controle de prazos do MP" name="(SG) Separação em controle de prazos do MP"/>
     </start-state>  
     <!-- NODES -->
@@ -34,7 +34,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Junção em controle de prazos do MP" name="(SG) Junção em controle de prazos do MP"/>
     </decision>
     <task-node end-tasks="true" name="(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR">
-        <task name="(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR" swimlane="Secretaria">
+        <task name="(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
@@ -73,12 +73,16 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:aguardaCiencia', 'true')}"/>
         </event>
     </task-node>
-    <decision expression="#{entityManager.createQuery(&quot;SELECT COUNT(*) FROM ProcessoParteExpediente AS ppe JOIN ppe.processoExpediente AS pe WHERE ppe.processoJudicial.idProcessoTrf = :idProcessoTrf AND ppe.pessoaParte.idPessoa = 4266 AND pe.tipoProcessoDocumento.idTipoProcessoDocumento != 34 AND ppe.tipoPrazo != 'S' AND ppe.fechado = false&quot;).setParameter(&quot;idProcessoTrf&quot;, tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).getSingleResult() &gt; 0 ? '(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR' : '(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR'}" name="(SG) Intimação ou citação ao MP com prazo continua aberto?">
-        <transition to="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR" name="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR"/>
+    <decision expression="#{entityManager.createQuery(&quot;SELECT COUNT(*) FROM ProcessoParteExpediente AS ppe JOIN ppe.processoExpediente AS pe WHERE ppe.processoJudicial.idProcessoTrf = :idProcessoTrf AND ppe.pessoaParte.idPessoa = 4266 AND pe.tipoProcessoDocumento.idTipoProcessoDocumento != 34 AND ppe.tipoPrazo != 'S' AND ppe.fechado = false&quot;).setParameter(&quot;idProcessoTrf&quot;, tramitacaoProcessualService.recuperaProcesso().idProcessoTrf).getSingleResult() &gt; 0 ? '(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR' : '(SG) É ato ordinatório à PGJ?'}" name="(SG) Intimação ou citação ao MP com prazo continua aberto?">
         <transition to="(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR" name="(SG) Intimação ou citação ao MP com prazo em curso - AGUARDAR"/>
+        <transition to="(SG) É ato ordinatório à PGJ?" name="(SG) É ato ordinatório à PGJ?"/>
+    </decision>
+    <decision expression="#{not empty tramitacaoProcessualService.recuperaVariavel('sg:aog:ato_ord_pgj') ? '(SG) Junção em controle de prazos do MP' : '(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR'}" name="(SG) É ato ordinatório à PGJ?">
+        <transition to="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR" name="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR"/>
+        <transition to="(SG) Junção em controle de prazos do MP" name="(SG) Junção em controle de prazos do MP"/>
     </decision>
     <task-node end-tasks="true" name="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR">
-        <task name="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR" swimlane="Secretaria">
+        <task name="(SG) Intimação ou citação ao MP com prazo decorrido - ANALISAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
@@ -122,7 +126,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Junção em controle de prazos do MP" name="(SG) Junção em controle de prazos do MP"/>
     </decision>
     <task-node end-tasks="true" name="(SG) Intimação ou citação ao MP sem prazo - AGUARDAR">
-        <task name="(SG) Intimação ou citação ao MP sem prazo - AGUARDAR" swimlane="Secretaria">
+        <task name="(SG) Intimação ou citação ao MP sem prazo - AGUARDAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
@@ -179,7 +183,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Junção em controle de prazos do MP" name="(SG) Junção em controle de prazos do MP"/>
     </decision>
     <task-node end-tasks="true" name="(SG) Intimação ou citação ao MP sem prazo e fechado - ANALISAR">
-        <task name="(SG) Intimação ou citação ao MP sem prazo e fechado - ANALISAR" swimlane="Secretaria">
+        <task name="(SG) Intimação ou citação ao MP sem prazo e fechado - ANALISAR" swimlane="Secretaria" priority="3">
             <controller>
                 <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
                 <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
@@ -230,7 +234,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
     </process-state>
     <end-state name="Término"/>
     <task-node end-tasks="true" name="Nó de Desvio - (SG) Controle de prazos do MP">
-        <task name="Nó de Desvio - (SG) Controle de prazos do MP" swimlane="Nó de Desvio - (SG) Controle de prazos do MP"/>
+        <task name="Nó de Desvio - (SG) Controle de prazos do MP" swimlane="Nó de Desvio - (SG) Controle de prazos do MP" priority="3"/>
         <transition to="Término" name="Término"/>
         <transition to="(SG) Intimação ou citação ao MP sem prazo - AGUARDAR" name="(SG) Intimação ou citação ao MP sem prazo - AGUARDAR"/>
         <transition to="(SG) Intimação ou citação ao MP sem prazo e fechado - ANALISAR" name="(SG) Intimação ou citação ao MP sem prazo e fechado - ANALISAR"/>
