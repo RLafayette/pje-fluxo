@@ -151,9 +151,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Intimação ou citação ao MP sem prazo continua aberto?" name="(SG) Intimação ou citação ao MP sem prazo continua aberto?">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(SG) Junção em controle de prazos do MP" name="Cancelar e sair da tarefa">
-            <condition expression="#{empty tramitacaoProcessualService.recuperaVariavel('sg:aog:ato_ord_pgj')}"/>
-        </transition>
+        <transition to="(SG) Junção em controle de prazos do MP" name="Cancelar e sair da tarefa"/>
         <transition to="(SG) Junção em controle de prazos do MP" name="Enviar concluso ao gabinete">
             <condition expression="#{!empty tramitacaoProcessualService.recuperaVariavel('sg:aog:ato_ord_pgj')}"/>
         </transition>
