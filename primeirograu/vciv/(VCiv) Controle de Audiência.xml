@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="(VCiv) Controle de Audiência">
-    <description><![CDATA[Fluxo responsável por controlar as audiências..]]></description>  
+    <description><![CDATA[Fluxo responsável por controlar as audiências.]]></description>  
     <!-- SWIMLANES -->
     <swimlane name="Magistrado">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('6:1469')}"/>
@@ -33,12 +33,14 @@
             <controller/>
         </task>
         <description><![CDATA[Tarefa de aguardar audiência.]]></description>
-        <transition to="(VCiv) Designar audiência" name=" 01 - Designar audiência"/>
-        <transition to="(VCiv) Existe audiência designada?" name="02 - Realizar audiência "/>
-        <transition to="(VCiv) Redesignar audiência" name="03 - Redesignar audiência"/>
-        <transition to="(VCiv) Cancelar audiência" name="04 - Cancelar audiência"/>
-        <transition to="(VCiv) Converter audiência em diligência" name="05 - Converter audiência em diligência"/>
-        <transition to="Término" name="06 - Cancelar e sair da tarefa"/>
+        <transition to="(VCiv) Designar audiência" name=" 01 - Designar audiência">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(VCiv) Existe audiência designada?" name="01 - Realizar audiência"/>
+        <transition to="(VCiv) Redesignar audiência" name="02 - Redesignar audiência"/>
+        <transition to="(VCiv) Cancelar audiência" name="03 - Cancelar audiência"/>
+        <transition to="(VCiv) Converter audiência em diligência" name="04 - Converter audiência em diligência"/>
+        <transition to="Término" name="05 - Cancelar e sair da tarefa"/>
         <transition to="Nó de Desvio - (VCiv) Controle de Audiência" name="Nó de Desvio - (VCiv) Controle de Audiência">
             <condition expression="#{true}"/>
         </transition>
@@ -89,6 +91,9 @@
         <transition to="Nó de Desvio - (VCiv) Controle de Audiência" name="Nó de Desvio - (VCiv) Controle de Audiência">
             <condition expression="#{true}"/>
         </transition>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada', processoJudicialManager.getProximaAudienciaDesignada(tramitacaoProcessualService.recuperaProcesso(), false))}"/>
+        </event>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:expedir_mandado')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('vciv:cumpridec:citar_intimar')}"/>
@@ -120,19 +125,22 @@
         <transition to="(VCiv) Apagar minuta em elaboração" name="Cancelar e sair da tarefa"/>
         <event type="task-start">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos','Cancelar e sair da tarefa')}"/>
-            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,164')}"/>
+            <action name="upd" expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{true}')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,233')}"/>
+            <action name="upd" expression="#{empty tramitacaoProcessualService.recuperaVariavel('local') ? tramitacaoProcessualService.gravaVariavel('local', processoTrfHome.instance.orgaoJulgador) : ''}"/>
+            <action name="upd" expression="#{empty tramitacaoProcessualService.recuperaVariavel('data_hora') ? (tramitacaoProcessualService.recuperaVariavel('pje:fluxo:audienciaSelecionada') eq null ? '' : tramitacaoProcessualService.gravaVariavel('data_hora', tramitacaoProcessualService.recuperaVariavel('pje:fluxo:audienciaSelecionada').getDtInicioFormatada())) : ''}"/>
         </event>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('minutaEmElaboracao', tramitacaoProcessualService.recuperaVariavelTarefa('textEditCombo:minuta_audiencia'))}"/>
+        </event>
+        <event type="task-create">
+            <action name="upd" expression="#{empty tramitacaoProcessualService.recuperaVariavel('pje:fluxo:audienciaSelecionada') ? tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada', processoJudicialManager.getProximaAudienciaDesignada(tramitacaoProcessualService.recuperaProcesso(), false)) : ''}"/>
         </event>
         <event type="node-leave">
             <action expression="#{not empty processoHome.idProcessoDocumento ? org.jboss.seam.bpm.processInstance.contextInstance.setVariable('minutaEmElaboracao', processoHome.idProcessoDocumento) : ''}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('tiposDisponiveisIds')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('aviso')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:transicao:dispensaRequeridos')}"/>
-        </event>
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada', processoJudicialManager.getProximaAudienciaDesignada(tramitacaoProcessualService.recuperaProcesso(), false))}"/>
         </event>
     </task-node>
     <node name="(VCiv) Apagar minuta em elaboração">
@@ -149,7 +157,7 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência">
-            <condition expression="#{tramitacaoProcessualService.recuperaVariavel('processo') == 156177}"/>
+            <condition expression="#{true}"/>
         </transition>
         <event type="task-start">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos','Cancelar e sair da tarefa')}"/>
@@ -159,6 +167,7 @@
         </event>
         <event type="node-enter">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
+            <action name="upd" expression="#{empty tramitacaoProcessualService.recuperaVariavel('pje:fluxo:audienciaSelecionada') ? tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada', processoJudicialManager.getProximaAudienciaDesignada(tramitacaoProcessualService.recuperaProcesso(), false)) : ''}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(VCiv) Assinar ata de audiência pelo magistrado">
@@ -173,22 +182,27 @@
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Minutar ata de audiência" name="(VCiv) Minutar ata de audiência"/>
+        <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência"/>
         <transition to="(VCiv) Selecionar opção de intimação" name="(VCiv) Selecionar opção de intimação">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Selecionar opção de intimação" name="Documento já assinado">
-            <condition expression="#{revisarMinutaAction.isDocumentoAssinado()}"/>
+            <condition expression="#{true}"/>
         </transition>
         <event type="task-start">
-            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,164')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,233')}"/>
+        </event>
+        <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Selecionar opção de intimação')}"/>
         </event>
         <event type="node-leave">
-            <action expression="#{processoAudienciaHome.instance.setStatusAudiencia(tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada'))}"/>
-            <action expression="#{processoAudienciaHome.update()}"/>
-            <action expression="#{processoAudienciaHome.registrarMovimentoAudiencia()}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada')}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.instance.setStatusAudiencia(tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada')) : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.update() : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.registrarMovimentoAudiencia() : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('local') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('data_hora') : ''}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(VCiv) Informar dados da audiência">
@@ -207,15 +221,15 @@
         <transition to="(VCiv) Preencheu dados da audiência - magistrado ?" name="Encaminhar para assinatura do magistrado"/>
         <transition to="(VCiv) Preencheu dados da audiência - ato judicial ?" name="Informar Movimentação Processual"/>
         <transition to="(VCiv) Ajustar audiência e movimentação" name="Gerar movimentação e ajustar audiência">
-            <condition expression="#{tramitacaoProcessualService.recuperaVariavel('processo') == 156177}"/>
+            <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Apagar minuta em elaboração" name="Cancelar e sair da tarefa"/>
-        <event type="task-start">
-            <action expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:audienciaSelecionada') eq null ? tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada',processoJudicialManager.getProximaAudienciaDesignada(processoTrfHome.instance)) : ''}"/>
-            <action name="Condicao do lancamento temporario de movimentos" expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{false}')}"/>
-        </event>
         <event type="task-create">
-            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+            <action name="upd" expression="#{empty tramitacaoProcessualService.recuperaVariavel('pje:fluxo:audienciaSelecionada') ? tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada', processoJudicialManager.getProximaAudienciaDesignada(tramitacaoProcessualService.recuperaProcesso(), false)) : ''}"/>
+        </event>
+        <event type="node-leave">
+            <action expression="#{not empty tramitacaoProcessualService.recuperaVariavel('aviso3') ? tramitacaoProcessualService.apagaVariavel('aviso3') : ''}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(VCiv) Informar movimentação">
@@ -230,7 +244,7 @@
         <transition to="(VCiv) Informar dados da audiência" name="Retornar para informar dados da audiência"/>
         <transition to="(VCiv) Deslocar OJ origem" name="Encaminhar para assinatura do magistrado com ato judicial"/>
         <event type="task-start">
-            <action name="Condicao do lancamento temporario de movimentos" expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{true}')}"/>
+            <action name="upd" expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{true}')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('AgrupamentosLancadosTemporariamente','14')}"/>
         </event>
         <event type="node-leave">
@@ -248,27 +262,31 @@
         <transition to="Nó de Desvio - (VCiv) Controle de Audiência" name="Nó de Desvio - (VCiv) Controle de Audiência">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(VCiv) Informar movimentação" name="Retornar para informar movimentação">
+        <transition to="(VCiv) Minutar ata de audiência" name="(VCiv) Minutar ata de audiência"/>
+        <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência"/>
+        <transition to="(VCiv) Informar movimentação" name="(VCiv) Informar movimentação">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(VCiv) Minutar ata de audiência" name="(VCiv) Minutar ata de audiência"/>
         <transition to="(VCiv) Selecionar opção de intimação" name="(VCiv) Selecionar opção de intimação">
             <condition expression="#{true}"/>
         </transition>
         <transition to="(VCiv) Selecionar opção de intimação" name="Documento já assinado">
-            <condition expression="#{revisarMinutaAction.isDocumentoAssinado()}"/>
+            <condition expression="#{true}"/>
         </transition>
         <event type="task-start">
-            <action expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{false}')}"/>
-            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,164')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,233')}"/>
+        </event>
+        <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('(VCiv) Selecionar opção de intimação')}"/>
         </event>
-        <event type="node-enter">
-            <action expression="#{processoAudienciaHome.instance.setStatusAudiencia(tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada'))}"/>
-            <action expression="#{processoAudienciaHome.update()}"/>
-            <action expression="#{processoAudienciaHome.registrarMovimentoAudiencia()}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada')}"/>
+        <event type="node-leave">
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.instance.setStatusAudiencia(tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada')) : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.update() : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.registrarMovimentoAudiencia() : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('local') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('data_hora') : ''}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(VCiv) Assinar ata de audiência pelo conciliador">
@@ -284,20 +302,25 @@
         <transition to="(VCiv) Selecionar opção de intimação" name="Intimar da audiência">
             <condition expression="#{true}"/>
         </transition>
-        <transition to="(VCiv) Selecionar opção de intimação" name="Documento já assinado">
-            <condition expression="#{revisarMinutaAction.isDocumentoAssinado()}"/>
-        </transition>
         <transition to="(VCiv) Minutar ata de audiência" name="(VCiv) Minutar ata de audiência"/>
+        <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência"/>
+        <transition to="(VCiv) Selecionar opção de intimação" name="Documento já assinado">
+            <condition expression="#{true}"/>
+        </transition>
         <event type="task-start">
-            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,164')}"/>
+            <action name="upd" expression="#{taskInstanceUtil.setVariable('tiposDisponiveisIds','87,233')}"/>
+        </event>
+        <event type="task-create">
             <action name="upd" expression="#{taskInstanceUtil.setFrameDefaultTransition('Intimar da audiência')}"/>
         </event>
         <event type="node-leave">
-            <action expression="#{processoAudienciaHome.instance.setStatusAudiencia(tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada'))}"/>
-            <action expression="#{processoAudienciaHome.update()}"/>
-            <action expression="#{processoAudienciaHome.registrarMovimentoAudiencia()}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada')}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.instance.setStatusAudiencia(tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada')) : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.update() : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? processoAudienciaHome.registrarMovimentoAudiencia() : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('local') : ''}"/>
+            <action name="upd" expression="#{revisarMinutaAction.isDocumentoAssinado() ? tramitacaoProcessualService.apagaVariavel('data_hora') : ''}"/>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(VCiv) Redesignar audiência">
@@ -324,12 +347,6 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:aud:expedir_mandado_aud', true)}"/>
         </event>
     </process-state>
-    <end-state name="Término">
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('textEditCombo:minuta_audiencia')}"/>
-        </event>
-    </end-state>
     <process-state name="(VCiv) Encaminar para o CEJUSC">
         <sub-process name="(VCiv) Controle do CEJUSC" binding="late"/>
         <transition to="Término" name="Término"/>
@@ -354,16 +371,10 @@
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada') != null ? '(VCiv) Assinar ata de audiência pelo conciliador' : '(VCiv) Informar dados da audiência'}" name="(VCiv) Preencheu dados audiência - conciliador?">
         <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência"/>
         <transition to="(VCiv) Assinar ata de audiência pelo conciliador" name="(VCiv) Assinar ata de audiência pelo conciliador"/>
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
-        </event>
     </decision>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada') != null ? '(VCiv) Deslocar OJ origem magistrado' : '(VCiv) Informar dados da audiência'}" name="(VCiv) Preencheu dados da audiência - magistrado ?">
         <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência"/>
         <transition to="(VCiv) Deslocar OJ origem magistrado" name="(VCiv) Deslocar OJ origem magistrado"/>
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.apagaVariavel('AgrupamentosLancadosTemporariamente')}"/>
-        </event>
     </decision>
     <decision expression="#{tramitacaoProcessualService.recuperaVariavel('pje:fluxo:statusAudienciaSelecionada') != null ? '(VCiv) Informar movimentação' : '(VCiv) Informar dados da audiência'}" name="(VCiv) Preencheu dados da audiência - ato judicial ?">
         <transition to="(VCiv) Informar dados da audiência" name="(VCiv) Informar dados da audiência"/>
@@ -377,9 +388,6 @@
             <action expression="#{processoAudienciaHome.registrarMovimentoAudiencia()}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:statusAudienciaSelecionada')}"/>
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:audienciaSelecionada')}"/>
-        </event>
-        <event type="node-enter">
-            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:fluxo:audienciaSelecionada', processoJudicialManager.getProximaAudienciaDesignada(tramitacaoProcessualService.recuperaProcesso(), false))}"/>
         </event>
     </node>
     <process-state name="(VCiv) Intimar da audiência">
@@ -423,7 +431,13 @@
             <action expression="#{tramitacaoProcessualService.apagaVariavel('pje:fluxo:deslocamento:orgaoCargoDestino')}"/>
             <action expression="#{tramitacaoProcessualService.deslocarFluxoParaOrgaoDiverso()}"/>
         </event>
-    </node>  
+    </node>
+    <end-state name="Término">
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('minutaEmElaboracao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('textEditCombo:minuta_audiencia')}"/>
+        </event>
+    </end-state>  
     <!-- PROCESS-EVENTS -->
     <event type="superstate-enter">
         <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
