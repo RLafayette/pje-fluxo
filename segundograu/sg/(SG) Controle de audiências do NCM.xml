@@ -9,10 +9,10 @@ Raia                              Localização              Papel
 Núcleo de Conciliação e Mediação  Secretaria Segundo Grau  Chefe de Secretaria]]></description>  
     <!-- SWIMLANES -->
     <swimlane name="Núcleo de Conciliação e Mediação">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,8:1338')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,8:1338')}"/>
     </swimlane>
     <swimlane name="Nó de Desvio - (SG) Controle de audiências do NCM">
-        <assignment actor-id="#{actor.id}"/>
+        <assignment/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
@@ -49,6 +49,7 @@ Núcleo de Conciliação e Mediação  Secretaria Segundo Grau  Chefe de Secretaria]]
         <transition to="(SG) Intimar as partes" name="02 - Intimar as partes"/>
         <transition to="(SG) Gravar variável fluxo único - Encaminhar autos ao gabinete" name="03 - Encaminhar autos ao gabinete"/>
         <transition to="(SG) Gravar variável fluxo único - Devolver à secretaria" name="04 - Devolver à secretaria"/>
+        <transition to="(SG) Publicar documento do CEJUSC no DJEN" name="05 - Publicar no DJEN"/>
         <event type="node-leave">
             <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:ncm:aviso_audiencia_analisar')}"/>
         </event>
@@ -160,6 +161,20 @@ Núcleo de Conciliação e Mediação  Secretaria Segundo Grau  Chefe de Secretaria]]
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:ncm:aviso_audiencia_analisar', 'O processo não pôde ser movimentado pois há ações sendo efetuadas em outras tarefas. Para movimentá-lo, é necessário finalizar os procedimentos nas demais caixas e deixá-lo, apenas, em &quot;(SG) Audiência - ANALISAR&quot;.')}"/>
         </event>
     </node>
+    <process-state name="(SG) Publicar documento do CEJUSC no DJEN">
+        <sub-process name="(SG) Preparação de documentos para o DJEN" binding="late"/>
+        <transition to="(SG) Controle de prazo de intimação expedida" name="(SG) Controle de prazo de intimação expedida"/>
+    </process-state>
+    <process-state name="(SG) Controle de prazo de intimação expedida">
+        <sub-process name="(SG) Controle de prazos" binding="late"/>
+        <transition to="(SG) Audiência - ANALISAR" name="(SG) Audiência - ANALISAR"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:contprazos:intimacao_generica', true)}"/>
+        </event>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('sg:contprazos:intimacao_generica')}"/>
+        </event>
+    </process-state>
     <end-state name="Término"/>
     <task-node end-tasks="true" name="Nó de Desvio - (SG) Controle de audiências do NCM">
         <task name="Nó de Desvio - (SG) Controle de audiências do NCM" swimlane="Nó de Desvio - (SG) Controle de audiências do NCM" priority="3"/>

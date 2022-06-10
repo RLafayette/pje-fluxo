@@ -44,7 +44,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <event type="task-create">
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', '(SG) Separação em preparar ato de comunicação')}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds', '60,65')}"/>
-            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('L,M,E,C,D,S')}"/>
+            <action expression="#{preparaAtoComunicacaoAction.setMeiosComunicacao('L,M,E,C,S')}"/>
         </event>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
@@ -53,7 +53,6 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         </event>
     </task-node>
     <fork name="(SG) Separação em preparar ato de comunicação">
-        <transition to="(SG) É edital?" name="(SG) É edital?"/>
         <transition to="(SG) É sistema?" name="(SG) É sistema?"/>
         <transition to="(SG) É pessoalmente?" name="(SG) É pessoalmente?"/>
         <transition to="(SG) É correios?" name="(SG) É correios?"/>
@@ -113,11 +112,15 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Lançar movimento de expedição de outros documentos" name="(SG) Lançar movimento de expedição de outros documentos"/>
     </decision>
     <node name="(SG) Lançar movimento de expedição de outros documentos">
-        <transition to="(SG) Publicação no DJe" name="(SG) Publicação no DJe"/>
+        <transition to="(SG) Publicação no DJEN" name="(SG) Publicação no DJEN"/>
         <event type="node-enter">
             <action expression="#{comunicacaoProcessualAction.enviarExpedientesLancarMovimentos('E', 'processoExpedienteAtual','#{preencherMovimento.deCodigo(60).associarAoDocumento(processoExpedienteAtual.getProcessoDocumento()).comComplementoDeCodigo(4).doTipoDominio().preencherComElementoDeCodigo(80).lancarMovimento()}')}"/>
         </event>
     </node>
+    <process-state name="(SG) Publicação no DJEN">
+        <sub-process name="(SG) Publicação no DJEN" binding="late"/>
+        <transition to="(SG) Controle de prazo de intimação expedida" name="(SG) Controle de prazo de Intimação expedida"/>
+    </process-state>
     <process-state name="(SG) Publicação no DJe">
         <sub-process name="(SG) Publicação no DJe" binding="late"/>
         <transition to="(SG) Controle de prazo de intimação expedida" name="(SG) Controle de prazo de Intimação expedida"/>
