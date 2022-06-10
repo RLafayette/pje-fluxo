@@ -9,9 +9,7 @@ Raia        Localização              Papel
 Secretaria  Secretaria Segundo Grau  Chefe de Secretaria
 Secretaria  Secretaria Segundo Grau  Servidor Geral.]]></description>  
     <!-- SWIMLANES -->
-    <swimlane name="Nó de Desvio - (SG) Fluxo básico geral">
-        <assignment actor-id="#{actor.id}"/>
-    </swimlane>
+    <swimlane name="Nó de Desvio - (SG) Fluxo básico geral"/>
     <swimlane name="Secretaria">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}"/>
     </swimlane>  

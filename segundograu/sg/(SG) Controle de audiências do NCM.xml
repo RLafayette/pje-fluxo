@@ -11,9 +11,7 @@ Núcleo de Conciliação e Mediação  Secretaria Segundo Grau  Chefe de Secretaria]]
     <swimlane name="Núcleo de Conciliação e Mediação">
         <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,8:1338')}"/>
     </swimlane>
-    <swimlane name="Nó de Desvio - (SG) Controle de audiências do NCM">
-        <assignment/>
-    </swimlane>  
+    <swimlane name="Nó de Desvio - (SG) Controle de audiências do NCM"/>
     <!-- START-STATE -->
     <start-state name="Início">
         <task name="Tarefa inicial" swimlane="Núcleo de Conciliação e Mediação" priority="3"/>
