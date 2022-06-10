@@ -5,9 +5,7 @@
 
 Descrição: Fluxo lançador de fluxo paralelo.]]></description>  
     <!-- SWIMLANES -->
-    <swimlane name="Nó de Desvio - (SG) Lançador de fluxo">
-        <assignment actor-id="#{actor.id}"/>
-    </swimlane>  
+    <swimlane name="Nó de Desvio - (SG) Lançador de fluxo"/>
     <!-- START-STATE -->
     <start-state name="Início">
         <task name="Tarefa inicial"/>
