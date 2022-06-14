@@ -69,7 +69,7 @@ Assessoria Segundo Grau  Assessor Geral]]></description>
         </event>
     </task-node>
     <task-node end-tasks="true" name="(SG) Secretário(a) [OFÍCIO] - ASSINAR">
-        <task name="(SG) Secretário(a) [OFÍCIO] - ASSINAR" swimlane="Secretaria">
+        <task name="(SG) Secretário(a) [OFÍCIO] - ASSINAR" swimlane="Secretaria" priority="4">
             <controller>
                 <variable name="Processo_Fluxo_prepararExpediente" mapped-name="frame:Processo_Fluxo_prepararExpediente" access="read,write"/>
             </controller>
