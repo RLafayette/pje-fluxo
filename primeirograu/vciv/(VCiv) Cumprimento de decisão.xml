@@ -40,7 +40,6 @@
         <transition to="(VCiv) Expedir Mandado?" name="(VCiv) Expedir Mandado?"/>
         <transition to="(VCiv) Expedir Carta Precatória?" name="(VCiv) Expedir Carta Precatória?"/>
         <transition to="(VCiv) Expedir Ofício?" name="(VCiv) Expedir Ofício?"/>
-        <transition to="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio?" name="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio?"/>
         <transition to="(VCiv) Renajud - Consultar?" name="(VCiv) Renajud - Consultar?"/>
         <transition to="(VCiv) Infojud ou Infoseg - Consultar?" name="(VCiv) Infojud ou Infoseg - Consultar?"/>
         <transition to="(VCiv) Aguardar decurso de prazo?" name="(VCiv) Aguardar decurso de prazo?"/>
@@ -448,11 +447,6 @@
             <action expression="#{tramitacaoProcessualService.gravaVariavel('vciv:cumpridec:certificar_decurso', false)}"/>
         </event>
     </process-state>
-    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('vciv:fbc:bacenjud_minutar') ? '(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio' : '(VCiv) Junção em cumprimento de decisão'}" name="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio?">
-        <description><![CDATA[]]></description>
-        <transition to="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio" name="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio"/>
-        <transition to="(VCiv) Junção em cumprimento de decisão" name="(VCiv) Junção em cumprimento de decisão"/>
-    </decision>
     <task-node end-tasks="true" name="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio">
         <task name="(VCiv) Bacenjud - Minutar bloqueio ou desbloqueio" swimlane="Secretaria" priority="3">
             <controller>
