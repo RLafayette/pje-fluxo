@@ -193,9 +193,7 @@ Aguardar Perícia / Laudo Técnico / Outros...]]></description>
             <condition expression="#{(parametroUtil.getParametro('pje:tjrn:fluxo:ef:ojs:ids').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat('_'))) &amp;&amp; processoTrfHome.possuiClasse(23)}"/>
         </transition>
         <transition to="(VCiv) Conclusão para decisão de urgência inicial" name="07 - Enviar concluso para decisão de urgência inicial"/>
-        <transition to="(VCiv) Conclusão para despacho inicial" name="15 - Enviar concluso para despacho inicial">
-            <condition expression="#{!(parametroUtil.getParametro('pje:tjrn:OJsJuizados').contains('_'.concat(tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador).concat('_')))}"/>
-        </transition>
+        <transition to="(VCiv) Conclusão para despacho inicial" name="15 - Enviar concluso para despacho inicial"/>
         <transition to="(VCiv) Dar cumprimento a ato judicial de penhora online" name="20 - Dar cumprimento a ato judicial de penhora online"/>
         <transition to="(VCiv) Citar com um clique" name="21 - Citar com um clique"/>
         <event type="node-enter">
