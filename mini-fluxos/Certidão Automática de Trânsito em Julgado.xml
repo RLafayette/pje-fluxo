@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<process-definition xmlns="urn:jbpm.org:jpdl-3.2" name="Certidão Automática de Trânsito em Julgado">
+    <description><![CDATA[Código: MINI_CERT_AUTO_TRANS_JULG
+        Nome: Certidão Automática de Trânsito em Julgado
+        Descrição: Mini Fluxo para certidão automática de trânsito em julgado.
+
+        ----------------------------------------------------------
+        Variáveis a serem configuradas na tabela de parâmetros:
+
+        - idTipoDocumentoCertidaoTransito - id do tipo de documento 'certidão de trânsito em julgado'
+        - idModeloCertidaoTransito - id do tipo de documento 'certidão de decurso de prazo'
+        - idTipoDocumentoCiencia - o id do tipo de documento para 'ciência'
+
+
+        ----------------------------------------------------------
+        Regra negocial
+        - O sistema deve juntar uma certidão automática de trânsito se o último ato judicial proferido nos autos foi uma sentença ou acórdão e que, após as intimações vinculadas a esse ato, nenhum documento de usuário externo foi juntado aos autos, desconsiderando, para todos os fins, o documento de usuário externo que seja um mero "ciente" (para verificar se se trata dessa hipótese, o fluxo verifica se o documento juntado é um HTML com menos de 400 caracteres, possui a palavra "ciente" e não possui as palavras "recurso" ou "reconsideração" no texto).
+
+        ----------------------------------------------------------
+        Intervenções:
+        - Foi adicionada uma transição de saída no fluxo de controle de expedientes para que o usuário, querendo, determine a geração automática da certidão
+        - Além disso, foi alterado o fluxo acima (vCiv_CPRE) para que, quando o sistema sair da tarefa de prazo em curso para tentar ir para prazo decorrido, fazer as verificações automáticas e, se for o caso, juntar uma certidão automática de decurso simples de prazo ou de trânsito em julgado, a depender do caso. Dessa maneira, quando o verificador periódico executar, o sistema deverá juntar as mencionadas certidões de forma automática (não foi possível testar a execução do verificador periódico).
+        - Criei modelo de certidão de trânsito (id = 72135)
+        - Criei os parâmetros idModeloCertidaoTransito (id = 72135), idTipoDocumentoCertidaoTransito (valor = 70) e idTipoDocumentoCiencia (valor = 222)
+        - Associei o papel Sistema com exigibilidade Suficiente para o tipo de documento de Certidão de trânsito (id = 70)
+
+        ----------------------------------------------------------
+        Como chamar o fluxo, variáveis que devem(podem) ser definidas ao iniciar o fluxo:
+        - pje:fluxo:nomePrefixoTipoFluxo (opcional): deve definir o tipo de fluxo que será exibido nos nós de tarefa do Fluxo. Exemplo: EF, ou VCiv, ou CEJUSC
+        - tjrn:fluxo:mini:catj:validarCertidaoDecursoPrazo (opcional): se contiver valor será validado se o processo houve manifestação ou não]]></description>  
+    <!-- SWIMLANES -->
+    <swimlane name="solicitante">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}"/>
+    </swimlane>
+    <swimlane name="Nó de Desvio - Certidão Automática de Trânsito em Julgado">
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}"/>
+    </swimlane>  
+    <!-- START-STATE -->
+    <start-state name="Início">
+        <task name="Tarefa inicial" priority="3"/>
+        <transition to="É competência criminal?" name="É competência criminal?"/>
+    </start-state>  
+    <!-- NODES -->
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:competenciaCriminal') ? 'Sim' : 'Não'}" name="É competência criminal?">
+        <transition to="Preparar variáveis para certificar trânsito em julgado" name="Não"/>
+        <transition to="(SG) Certidão de trânsito em julgado - EXPEDIR" name="Sim"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:competenciaCriminal', entityManager.createNativeQuery(parametroUtil.getParametro('pje:tjrn:query_eh_criminal')).setParameter('idProcesso',tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf()).getSingleResult() eq 1)}"/>
+        </event>
+    </decision>
+    <node name="Preparar variáveis para certificar trânsito em julgado">
+        <transition to="Houve alguma manifestação após a sentença ou acórdão?" name="Houve alguma manifestação após a sentença ou acórdão?"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:catj:documentosPosSentencaAcordao')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:mini:catj:ultimoAtoJudicial')}"/>
+        </event>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:ultimoAtoJudicial', documentoJudicialService.getUltimoAtoJudicial(tramitacaoProcessualService.recuperaProcesso().getProcesso()))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:documentosPosSentencaAcordao', processoDocumentoManager.recuperaDocumentosJuntados(tramitacaoProcessualService.recuperaProcesso(), tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:ultimoAtoJudicial').getDataJuntada()))}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:houvePeticaoExternaJuntada', false)}"/>
+            <action expression="#{empty tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:documentosPosSentencaAcordao') ? '' :                  tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:documentosPosSentencaAcordao').{d |                      d.getInTipoOrigemJuntada() ne 'I' and not                     (                         (d.getTipoProcessoDocumento().getIdTipoProcessoDocumento() eq parametroService.valueOf('idTipoDocumentoCiencia')) or                         (d.getProcessoDocumentoBin()!=null and d.getProcessoDocumentoBin().getModeloDocumento()!=null and                             d.getProcessoDocumentoBin().getModeloDocumento().toLowerCase().indexOf('ciente')!=-1 and                             d.getProcessoDocumentoBin().getModeloDocumento().toLowerCase().indexOf('recurso')==-1 and                             d.getProcessoDocumentoBin().getModeloDocumento().toLowerCase().indexOf('reconsidera')==-1 and                             d.getProcessoDocumentoBin().getModeloDocumento().length() lt 400)                     )                     ? tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:houvePeticaoExternaJuntada', true) : ''                 }             }"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:ultimaIntimacao', entityManager.createNativeQuery(&quot;select cast(tppe.id_processo_parte_expediente as integer) from tb_proc_parte_expediente tppe where id_processo_trf = :idProcesso and id_processo_expediente in (select distinct on (id_processo_trf) id_processo_expediente from tb_processo_expediente tpe where cast(id_tipo_processo_documento as varchar) = :idTipoDocumentoIntimacao and tpe.id_processo_trf = tppe.id_processo_trf order by id_processo_trf , id_processo_expediente desc) order by dt_ciencia_parte desc limit 1 &quot;).setParameter('idProcesso',tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf()).setParameter('idTipoDocumentoIntimacao',parametroService.valueOf('idTipoDocumentoIntimacao')).getResultList().stream().findFirst().orElse(null))}"/>
+        </event>
+    </node>
+    <decision expression="#{tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:houvePeticaoExternaJuntada') ? 'Sim' : 'Não'}" name="Houve alguma manifestação após a sentença ou acórdão?">
+        <transition to="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR" name="Sim"/>
+        <transition to="Preparar informação para Certidão automática de trânsito em julgado" name="Não"/>
+    </decision>
+    <task-node end-tasks="true" name="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR">
+        <task name="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR" swimlane="solicitante" priority="3">
+            <controller>
+                <variable name="aviso1" mapped-name="textAlert:aviso1" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="Término" name="Finalizar e sair da tarefa"/>
+        <transition to="Nó de Desvio - Certidão Automática de Trânsito em Julgado" name="Nó de Desvio - Certidão Automática de Trânsito em Julgado">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Certidão de trânsito em julgado - EXPEDIR" name="Expedir manualmente certidão de trânsito em julgado"/>
+    </task-node>
+    <node name="Preparar informação para Certidão automática de trânsito em julgado">
+        <transition to="Possui documento vinculado?" name="Possui documento vinculado?"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:idMinuta')}"/>
+        </event>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:idDocumentoVinculadoUltimaIntimacao', processoParteExpedienteManager.findById(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:ultimaIntimacao')).getProcessoExpediente().getProcessoDocumentoVinculadoExpediente().getIdProcessoDocumento())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:tipoDocumentoVinculadoUltimaIntimacao', processoParteExpedienteManager.findById(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:ultimaIntimacao')).getProcessoExpediente().getProcessoDocumentoVinculadoExpediente().getTipoProcessoDocumento().getTipoProcessoDocumento())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:dataCienciaUltimaIntimacao', processoParteExpedienteManager.findById(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:ultimaIntimacao')).getDtPrazoLegal())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:processoExpedienteUltimaIntimacao', processoParteExpedienteManager.findById(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:ultimaIntimacao')).getProcessoExpediente())}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:mini:catj:nomePartesDocumentoVinculadoUltimaIntimacao', processoParteExpedienteHome.getProcessoParteExpedienteList(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:processoExpedienteUltimaIntimacao')))}"/>
+        </event>
+    </node>
+    <decision expression="#{empty tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:idDocumentoVinculadoUltimaIntimacao') ? 'Sim' : 'Não'}" name="Possui documento vinculado?">
+        <transition to="Certidão automática de trânsito em julgado" name="Não"/>
+        <transition to="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR" name="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR"/>
+    </decision>
+    <node name="Certidão automática de trânsito em julgado">
+        <transition to="Processos com trânsito em julgado certificados automaticamente" name="Processos com trânsito em julgado certificados automaticamente"/>
+        <event type="node-leave">
+            <action expression="#{tramitacaoProcessualService.apagaVariavel('tjrn:fluxo:idMinuta')}"/>
+        </event>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('tjrn:fluxo:idMinuta', documentoJudicialService.gerarMinuta(tramitacaoProcessualService.recuperaProcesso().getIdProcessoTrf(), 0, taskInstance.id, parametroService.valueOf('idTipoDocumentoCertidaoTransito'), parametroService.valueOf('idModeloCertidaoTransito')))}"/>
+            <action expression="#{preencherMovimento.deCodigo(848).associarAoDocumentoDeId(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:idMinuta')).comComplementoDeCodigo(14).doTipoLivre().preencherComTexto(dateUtil.dateToString(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:dataCienciaUltimaIntimacao'),'dd/MM/yyyy')).lancarMovimentoTemporariamente(processInstance)}"/>
+            <action expression="#{documentoJudicialService.juntarDocumento(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:idMinuta'), taskInstance.id,processInstance.id)}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('pje:atoProferido', documentoJudicialService.getDocumento(tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:idMinuta')).getIdProcessoDocumento())}"/>
+        </event>
+    </node>
+    <task-node end-tasks="true" name="Processos com trânsito em julgado certificados automaticamente">
+        <task name="Processos com trânsito em julgado certificados automaticamente" swimlane="solicitante" priority="3">
+            <controller>
+                <variable name="Processo_Fluxo_visualizarDecisao" mapped-name="frame:Processo_Fluxo_visualizarDecisao" access="read,write"/>
+                <variable name="MovimentarLote" mapped-name="movimentarLote:MovimentarLote" access="read,write"/>
+            </controller>
+        </task>
+        <transition to="Nó de Desvio - Certidão Automática de Trânsito em Julgado" name="Nó de Desvio - Certidão Automática de Trânsito em Julgado">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="Término" name="Finalizar e sair da tarefa"/>
+        <event type="task-create">
+            <action expression="#{taskInstanceUtil.setVariable('mostrarBotaoGravarNoFluxo', 'false')}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(SG) Certidão de trânsito em julgado - EXPEDIR">
+        <task name="(SG) Certidão de trânsito em julgado - EXPEDIR" swimlane="solicitante" priority="3">
+            <controller>
+                <variable name="minuta_certidao_transito_julgado" mapped-name="textEditCombo:minuta_certidao_transito_julgado" access="read,write,required"/>
+                <variable name="minutarLote" mapped-name="minutarLote:minutarLote" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[*Variáveis*
+
+1. Variável: minuta_certidao_transito_julgado
+   Label: Minuta em elaboração de certidão de trânsito em julgado
+   Escrita: Sim
+   Obrig.: Sim
+   Tipo: Editor
+
+2. Variável: minutarLote
+   Label: 
+   Escrita: Sim
+   Obrig.: Não
+   Tipo: Habilitar Minutar em Lote
+
+*Eventos de tarefa*
+
+1. Tipo de evento: Sair tarefa
+   Agrupamento eventos: Trânsito em julgado
+   Condição para lançamento temporário: #{true}]]></description>
+        <transition to="Nó de Desvio - Certidão Automática de Trânsito em Julgado" name="Nó de Desvio - Certidão Automática de Trânsito em Julgado">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Apagar minuta não assinada de trânsito em julgado" name="Cancelar e sair da tarefa"/>
+        <transition to="(SG) Certidão de trânsito em julgado - ASSINAR" name=" Encaminhar para assinatura"/>
+        <event type="task-start">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds','70')}"/>
+            <action name="Condicao do lancamento temporario de movimentos" expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{true}')}"/>
+        </event>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('minutaEmElaboracao', tramitacaoProcessualService.recuperaVariavelTarefa('textEditCombo:minuta_certidao_transito_julgado'))}"/>
+            <action expression="#{not empty processoHome.idProcessoDocumento ? tramitacaoProcessualService.gravaVariavelTarefa('minutaEmElaboracao', processoHome.idProcessoDocumento) : ''}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('TipoDocumentoTipoProcessoDocumento')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds','70')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('pje:fluxo:transicao:dispensaRequeridos', 'Cancelar e sair da tarefa')}"/>
+        </event>
+    </task-node>
+    <task-node end-tasks="true" name="(SG) Certidão de trânsito em julgado - ASSINAR">
+        <task name="(SG) Certidão de trânsito em julgado - ASSINAR" swimlane="solicitante" priority="4">
+            <controller>
+                <variable name="Processo_Fluxo_revisarMinuta" mapped-name="frame:Processo_Fluxo_revisarMinuta" access="read,write"/>
+                <variable name="movimentacaoLote" mapped-name="movimentarLote:movimentacaoLote" access="read,write"/>
+                <variable name="assinaturaLote" mapped-name="assinarLote:assinaturaLote" access="read,write"/>
+            </controller>
+        </task>
+        <description><![CDATA[*Variáveis*
+
+1. Variável: Processo_Fluxo_revisarMinuta
+   Label: 
+   Escrita: Sim
+   Obrig.: Não
+   Tipo: Frame
+
+2. Variável: movimentacaoLote
+   Label: 
+   Escrita: Sim
+   Obrig.: Não
+   Tipo: Habilitar Movimentação em Lote
+
+3. Variável: assinaturaLote
+   Label: 
+   Escrita: Sim
+   Obrig.: Não
+   Tipo: Habilitar Assinatura em Lote]]></description>
+        <transition to="Nó de Desvio - Certidão Automática de Trânsito em Julgado" name="Nó de Desvio - Certidão Automática de Trânsito em Julgado">
+            <condition expression="#{true}"/>
+        </transition>
+        <transition to="(SG) Certidão de trânsito em julgado - EXPEDIR" name="Retornar para minuta de certidão de trânsito em julgado"/>
+        <transition to="Término" name="Término">
+            <condition expression="#{true}"/>
+        </transition>
+        <event type="task-end">
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('tiposDisponiveisIds')}"/>
+            <action expression="#{tramitacaoProcessualService.apagaVariavelTarefa('frameDefaultLeavingTransition')}"/>
+        </event>
+        <event type="task-create">
+            <action expression="#{lancadorMovimentosService.setCondicaoLancamentoMovimentosTemporarioNoFluxo('#{false}')}"/>
+            <action expression="#{tramitacaoProcessualService.gravaVariavelTarefa('tiposDisponiveisIds', '70')}"/>
+            <action name="upd" expression="#{tramitacaoProcessualService.gravaVariavelTarefa('frameDefaultLeavingTransition', 'Término')}"/>
+        </event>
+    </task-node>
+    <node name="(SG) Apagar minuta não assinada de trânsito em julgado">
+        <transition to="Término" name="Término"/>
+        <event type="node-enter">
+            <action expression="${documentoJudicialService.removerDocumentoAPartirDeVariavalDeFluxo('minuta_certidao_transito_julgado')}"/>
+        </event>
+    </node>
+    <end-state name="Término"/>
+    <task-node end-tasks="true" name="Nó de Desvio - Certidão Automática de Trânsito em Julgado">
+        <task name="Nó de Desvio - Certidão Automática de Trânsito em Julgado" swimlane="Nó de Desvio - Certidão Automática de Trânsito em Julgado" priority="3"/>
+        <transition to="Término" name="Término"/>
+        <transition to="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR" name="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR"/>
+        <transition to="Processos com trânsito em julgado certificados automaticamente" name="Processos com trânsito em julgado certificados automaticamente"/>
+        <transition to="(SG) Certidão de trânsito em julgado - EXPEDIR" name="(SG) Certidão de trânsito em julgado - EXPEDIR"/>
+        <transition to="(SG) Certidão de trânsito em julgado - ASSINAR" name="(SG) Certidão de trânsito em julgado - ASSINAR"/>
+    </task-node>  
+    <!-- PROCESS-EVENTS -->
+    <event type="superstate-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="before-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-create">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-created">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-assign">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="transition">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="after-signal">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="timer">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="task-start">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="subprocess-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="process-end">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="superstate-leave">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>
+    <event type="node-enter">
+        <script>br.com.infox.ibpm.util.JbpmEvents.raiseEvent(executionContext)</script>
+    </event>  
+    <!-- ACTIONS --> 
+</process-definition>
