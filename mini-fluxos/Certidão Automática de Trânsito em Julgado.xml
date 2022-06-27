@@ -94,7 +94,7 @@
     </node>
     <decision expression="#{empty tramitacaoProcessualService.recuperaVariavel('tjrn:fluxo:mini:catj:idDocumentoVinculadoUltimaIntimacao') ? 'Sim' : 'Não'}" name="Possui documento vinculado?">
         <transition to="Certidão automática de trânsito em julgado" name="Não"/>
-        <transition to="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR" name="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR"/>
+        <transition to="(SG) Processos com trânsito em julgado NÃO certificados automaticamente - ANALISAR" name="Sim"/>
     </decision>
     <node name="Certidão automática de trânsito em julgado">
         <transition to="Processos com trânsito em julgado certificados automaticamente" name="Processos com trânsito em julgado certificados automaticamente"/>
